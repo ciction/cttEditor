@@ -25,6 +25,7 @@ namespace cttEditor
             CoursesCountLabel.Text = (CoursesdataGridView.RowCount - 1).ToString();
 
                 //this.CoursesdataGridView.Rows.Add("five", "six", "seven", "eight");
+                //temp comment
 
         }
 
