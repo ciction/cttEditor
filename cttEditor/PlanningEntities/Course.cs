@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace cttEditor
 {
-    public class Course : PlanningEntity
+    public class Course : PlanningEntity, IEquatable<Course>
     {
         public Course()
         {
@@ -26,10 +25,18 @@ namespace cttEditor
 
         //ABAP_Objects S.Weemaels 5 1 5
         public string CourseCode { get; set; }
+
         public string TeacherCode { get; set; }
         public int LectureSize { get; set; }
         public int MinimumWorkingDays { get; set; }
         public int StudentSize { get; set; }
+
+        public bool Equals(Course other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return string.Equals(CourseCode, other.CourseCode);
+        }
 
 
         public void AddToDataGrid(DataGridView destinationGrid)
@@ -49,23 +56,10 @@ namespace cttEditor
             StudentSize = int.Parse(words[i++]);
         }
 
-        private sealed class CourseCodeEqualityComparer : IEqualityComparer<Course>
+        public override bool Equals(object obj)
         {
-            public bool Equals(Course x, Course y)
-            {
-                if (ReferenceEquals(x, y)) return true;
-                if (ReferenceEquals(x, null)) return false;
-                if (ReferenceEquals(y, null)) return false;
-                if (x.GetType() != y.GetType()) return false;
-                return string.Equals(x.CourseCode, y.CourseCode);
-            }
-
-            public int GetHashCode(Course obj)
-            {
-                return (obj.CourseCode != null ? obj.CourseCode.GetHashCode() : 0);
-            }
+            // Delegate...
+            return Equals(obj as Course);
         }
-
-        public static IEqualityComparer<Course> CourseCodeComparer { get; } = new CourseCodeEqualityComparer();
     }
 }

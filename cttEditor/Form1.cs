@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -9,15 +8,15 @@ namespace cttEditor
     public partial class Form1 : Form
     {
         private int _courseCount;
+        private int _curriculaCount;
         private int _periodsPerDay;
         private int _roomCount;
-        private int _curriculaCount;
 
 
         public Form1()
         {
             InitializeComponent();
-            
+
             ReadCtt(
                 @"C:\Users\Christophe\Documents\programming\bachelorproef\ctt_editor\cttEditor\cttEditor\digx_opgesplitst.ctt");
 
@@ -166,8 +165,6 @@ namespace cttEditor
         }
 
 
-
-
         /// <summary>
         ///     Parse datablock partially to a datagrid
         /// </summary>
@@ -186,9 +183,6 @@ namespace cttEditor
             }
         }
 
-        //delegates
-        private delegate void AddPlanningEntityDelegate(string line);
-
         private void CurriculadataGridView_SelectionChanged(object sender, EventArgs e)
         {
             UpdateCurriculumCourses();
@@ -196,45 +190,111 @@ namespace cttEditor
 
         private void UpdateCurriculumCourses()
         {
-            var selectedRow = this.CurriculadataGridView.CurrentCell.RowIndex;
-            var selectedCurriculum = EntityDataBase.Curricula[selectedRow];
-            var inactiveCourses = EntityDataBase.Courses.Except(selectedCurriculum.Courses).ToArray();
-
-            //Update Active course listbox
             CourseListBox.Items.Clear();
-            foreach (var course in selectedCurriculum.Courses)
-            {
-                CourseListBox.Items.Add(course.CourseCode);
-            }
-
-            //Update Inactive course listbox
             InactiveCoursesBox.Items.Clear();
-            foreach (var course in inactiveCourses)
+            var selectedCurriculum = GetSelectedCuriculum();
+
+            if (selectedCurriculum != null)
             {
-                InactiveCoursesBox.Items.Add(course.CourseCode);
+                var selectedRow = CurriculadataGridView.CurrentCell.RowIndex;
+                CurriculadataGridView["CurriculumGrid_CourseCount", selectedRow].Value = selectedCurriculum.CourseCount;
+
+                var inactiveCourses = EntityDataBase.Courses.Except(selectedCurriculum.Courses).ToArray();
+
+                //Update Active course listbox
+                foreach (var course in selectedCurriculum.Courses)
+                    CourseListBox.Items.Add(course.CourseCode);
+
+                //Update Inactive course listbox
+                foreach (var course in inactiveCourses)
+                    InactiveCoursesBox.Items.Add(course.CourseCode);
             }
         }
+
         private void AddCourseButton_Click(object sender, EventArgs e)
         {
             if (InactiveCoursesBox.SelectedItem != null)
             {
-                var courseCode = InactiveCoursesBox.SelectedItem.ToString();
-                Console.WriteLine(courseCode);
+                var selectedCourse = GetSelectedInactiveCourse();
+                var selectedCurriculum = GetSelectedCuriculum();
 
-                //find Course by CourseCode
-                int index = EntityDataBase.Courses.IndexOf(EntityDataBase.Courses.FirstOrDefault(c => c.CourseCode == courseCode));
-                var selectedCourse = EntityDataBase.Courses[index];
+                try
+                {
+                    selectedCurriculum.AddCourse(selectedCourse);
+                    UpdateCurriculumCourses();
+                }
+                catch (Exception exception)
+                {
+                    Console.WriteLine(exception);
+                }
 
-                var selectedRow = this.CurriculadataGridView.CurrentCell.RowIndex;
-                var selectedCurriculum = EntityDataBase.Curricula[selectedRow];
-                selectedCurriculum.AddCourse(selectedCourse);
-                UpdateCurriculumCourses();
             }
         }
 
         private void RemoveCourseButton_Click(object sender, EventArgs e)
         {
+            var selectedCourse = GetSelectedActiveCourse();
+            var selectedCurriculum = GetSelectedCuriculum();
+
+
+            try
+            {
+                selectedCurriculum.RemoveCourse(selectedCourse);
+                UpdateCurriculumCourses();
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+            }
 
         }
+
+        private Course GetSelectedInactiveCourse()
+        {
+            if (InactiveCoursesBox.SelectedItem != null)
+            {
+                var courseCode = InactiveCoursesBox.SelectedItem.ToString();
+
+                //find Course by 
+                var index = EntityDataBase.Courses.IndexOf(
+                    EntityDataBase.Courses.FirstOrDefault(c => c.CourseCode == courseCode));
+                return EntityDataBase.Courses[index];
+            }
+            else
+            {
+                return null;
+            }
+          
+        }
+
+        private Course GetSelectedActiveCourse()
+        {
+            if (CourseListBox.SelectedItem != null)
+            {
+                var courseCode = CourseListBox.SelectedItem.ToString();
+
+                //find Course by 
+                var index = EntityDataBase.Courses.IndexOf(
+                    EntityDataBase.Courses.FirstOrDefault(c => c.CourseCode == courseCode));
+                return EntityDataBase.Courses[index];
+            }
+            else
+            {
+                return null;
+            }
+
+        }
+
+        private Curriculum GetSelectedCuriculum()
+        {
+            var selectedRow = CurriculadataGridView.CurrentCell.RowIndex;
+            if (selectedRow < EntityDataBase.Curricula.Count)
+            {
+                return EntityDataBase.Curricula[selectedRow];
+            }
+            return null;
+        }
+        //delegates
+        private delegate void AddPlanningEntityDelegate(string line);
     }
 }

@@ -53,8 +53,6 @@ namespace cttEditor
             this.CurriculaLabel = new System.Windows.Forms.Label();
             this.CurriculaCountLabel = new System.Windows.Forms.Label();
             this.CurriculadataGridView = new System.Windows.Forms.DataGridView();
-            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.UnavailabilityLabel = new System.Windows.Forms.Label();
             this.UnavailabilityCountLabel = new System.Windows.Forms.Label();
             this.ConstraintsDataGridView = new System.Windows.Forms.DataGridView();
@@ -69,6 +67,8 @@ namespace cttEditor
             this.InactiveCoursesBox = new System.Windows.Forms.ListBox();
             this.label1 = new System.Windows.Forms.Label();
             this.Curricula = new System.Windows.Forms.GroupBox();
+            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CurriculumGrid_CourseCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.CoursesdataGridView)).BeginInit();
             this.groupBoxGeneral.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RoomsdataGridView)).BeginInit();
@@ -270,7 +270,7 @@ namespace cttEditor
             this.CurriculadataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.CurriculadataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.dataGridViewTextBoxColumn3,
-            this.dataGridViewTextBoxColumn7});
+            this.CurriculumGrid_CourseCount});
             this.CurriculadataGridView.Location = new System.Drawing.Point(6, 33);
             this.CurriculadataGridView.Name = "CurriculadataGridView";
             this.CurriculadataGridView.Size = new System.Drawing.Size(244, 134);
@@ -278,16 +278,6 @@ namespace cttEditor
             this.CurriculadataGridView.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.CoursesdataGridView_CellValidating);
             this.CurriculadataGridView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.CoursesdataGridView_CellValueChanged);
             this.CurriculadataGridView.SelectionChanged += new System.EventHandler(this.CurriculadataGridView_SelectionChanged);
-            // 
-            // dataGridViewTextBoxColumn3
-            // 
-            this.dataGridViewTextBoxColumn3.HeaderText = "CurriculumCode";
-            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
-            // 
-            // dataGridViewTextBoxColumn7
-            // 
-            this.dataGridViewTextBoxColumn7.HeaderText = "Course Count";
-            this.dataGridViewTextBoxColumn7.Name = "dataGridViewTextBoxColumn7";
             // 
             // UnavailabilityLabel
             // 
@@ -428,6 +418,17 @@ namespace cttEditor
             this.Curricula.TabStop = false;
             this.Curricula.Text = "Curricula:";
             // 
+            // dataGridViewTextBoxColumn3
+            // 
+            this.dataGridViewTextBoxColumn3.HeaderText = "CurriculumCode";
+            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
+            // 
+            // CurriculumGrid_CourseCount
+            // 
+            this.CurriculumGrid_CourseCount.HeaderText = "Course Count";
+            this.CurriculumGrid_CourseCount.Name = "CurriculumGrid_CourseCount";
+            this.CurriculumGrid_CourseCount.ReadOnly = true;
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -492,8 +493,6 @@ namespace cttEditor
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn8;
         private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn9;
         private System.Windows.Forms.DataGridViewTextBoxColumn Timeslot;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
-        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn7;
         private System.Windows.Forms.ListBox CourseListBox;
         private System.Windows.Forms.Label CourseListLabel;
         private System.Windows.Forms.Button AddCourseButton;
@@ -501,6 +500,8 @@ namespace cttEditor
         private System.Windows.Forms.ListBox InactiveCoursesBox;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.GroupBox Curricula;
+        private System.Windows.Forms.DataGridViewTextBoxColumn dataGridViewTextBoxColumn3;
+        private System.Windows.Forms.DataGridViewTextBoxColumn CurriculumGrid_CourseCount;
     }
 }
 
