@@ -1,64 +1,58 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
 using System.IO;
 using System.Linq;
-using System.Reflection;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace cttEditor
 {
     public partial class Form1 : Form
     {
-        private List<Course> _courses = new List<Course>();
-        private int _courseCount = 0;
-        private int _periodsPerDay = 0;
+        private readonly List<Course> _courses = new List<Course>();
+        private readonly List<Room> _rooms = new List<Room>();
+        private int _courseCount;
+        private int _periodsPerDay;
+        private int _roomCount;
+
 
         public Form1()
         {
             InitializeComponent();
-            ReadCtt(@"C:\Users\Christophe\Documents\programming\bachelorproef\ctt_editor\cttEditor\cttEditor\digx_opgesplitst.ctt");
+            ReadCtt(
+                @"C:\Users\Christophe\Documents\programming\bachelorproef\ctt_editor\cttEditor\cttEditor\digx_opgesplitst.ctt");
 
             //init fields
             CoursesCountLabel.Text = (CoursesdataGridView.RowCount - 1).ToString();
 
-                //this.CoursesdataGridView.Rows.Add("five", "six", "seven", "eight");
-                //temp comment
-
+            //this.CoursesdataGridView.Rows.Add("five", "six", "seven", "eight");
+            //temp comment
         }
 
 
-
+        //Course grid label
         private void CoursesdataGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             CoursesCountLabel.Text = CoursesdataGridView.RowCount.ToString();
         }
 
+        //Rooms grid label
         private void RoomsdataGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             RoomsCountLabel.Text = RoomsdataGridView.RowCount.ToString();
         }
 
         private void CoursesdataGridView_CellValidating(object sender,
-                                           DataGridViewCellValidatingEventArgs e)
+            DataGridViewCellValidatingEventArgs e)
         {
-            if (e.ColumnIndex > 1 ) // 1 should be your column index
+            if (e.ColumnIndex > 1) // 1 should be your column index
             {
                 int i;
 
                 if (!int.TryParse(Convert.ToString(e.FormattedValue), out i))
                 {
                     e.Cancel = true;
-                    MessageBox.Show("please enter a numeric value", "Data not numeric", MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
-                }
-                else
-                {
-                    // the input is numeric 
+                    MessageBox.Show("please enter a numeric value", "Data not numeric", MessageBoxButtons.OK,
+                        MessageBoxIcon.Exclamation);
                 }
             }
         }
@@ -70,17 +64,16 @@ namespace cttEditor
             {
                 // Create an instance of StreamReader to read from a file.
                 // The using statement also closes the StreamReader.
-                using (StreamReader sr = new StreamReader(file))
+                using (var sr = new StreamReader(file))
                 {
                     string line;
-                    int linenumber = 1;
+                    var linenumber = 1;
                     // Read and display lines from the file until the end of 
                     // the file is reached.
                     while ((line = sr.ReadLine()) != null)
                     {
-                        
                         //words on the current line
-                        string[] words = line.Split(' ');
+                        var words = line.Split(' ');
                         switch (words[0])
                         {
                             case "Name:":
@@ -91,20 +84,25 @@ namespace cttEditor
                                 break;
                             case "Courses:":
                                 _courseCount = int.Parse(words[1]);
+                                CoursesCountLabel.Text = _courseCount.ToString();
+                                break;
+                            case "Rooms:":
+                                _roomCount = int.Parse(words[1]);
+                                RoomsCountLabel.Text = _roomCount.ToString();
                                 break;
                             case "Periods_per_day:":
                                 _periodsPerDay = int.Parse(words[1]);
                                 CttPeriodsValue.Text = words[1];
                                 break;
                             case "COURSES:":
-                                ParseCourse(linenumber, _courseCount, file);
+                                ParseDataBlock(linenumber, _courseCount, file, AddCourse);
                                 foreach (var course in _courses)
-                                {
-                                    course.AddToDataGrid(this.CoursesdataGridView);
-                                }
+                                    course.AddToDataGrid(CoursesdataGridView);
                                 break;
                             case "ROOMS:":
-//                                parseBlockToDatagrid(linenumber,2, file, this.RoomsdataGridView);
+                                ParseDataBlock(linenumber, _roomCount, file, AddRoom);
+                                foreach (var room in _rooms)
+                                    room.AddToDataGrid(RoomsdataGridView);
                                 break;
                             case "CURRICULA:":
 //                                parseBlockToDatagrid(linenumber, 2, file, this.CurriculadataGridView, 2);
@@ -125,36 +123,51 @@ namespace cttEditor
             }
         }
 
-        //Parse Course DataBlock
-        private void ParseCourse(int firstLine,int count, string file)
+
+        //Parse DataBlock
+        private void ParseDataBlock(int firstLine, int count, string file, AddPlanningEntityDelegate addPlanningEntity)
         {
-            var lines = File.ReadLines(file).Skip(firstLine).Take(count).ToList<String>();
+            var lines = File.ReadLines(file).Skip(firstLine).Take(count).ToList();
             foreach (var line in lines)
-            {
-                Course newCourse = new Course();
-                newCourse.ParseCtt(line);
-                _courses.Add(newCourse);
-            }
+                addPlanningEntity(line);
+        }
+
+        //addPlanningEntity Course
+        private void AddCourse(string line)
+        {
+            var newCourse = new Course();
+            newCourse.ParseCtt(line);
+            _courses.Add(newCourse);
+        }
+
+        //addPlanningEntity Course
+        private void AddRoom(string line)
+        {
+            var newRoom = new Room();
+            newRoom.ParseCtt(line);
+            _rooms.Add(newRoom);
         }
 
 
         /// <summary>
-        /// Parse datablock partially to a datagrid
+        ///     Parse datablock partially to a datagrid
         /// </summary>
         /// <param name="lineItems">only take first n parameters per line</param>
-        private void parseBlockToDatagrid(int firstLine, int count, string file, DataGridView destinationGrid, int lineItems)
+        private void parseBlockToDatagrid(int firstLine, int count, string file, DataGridView destinationGrid,
+            int lineItems)
         {
-            var lines = File.ReadLines(file).Skip(firstLine).Take(count).ToList<String>();
-            string simplifiedLine = "";
+            var lines = File.ReadLines(file).Skip(firstLine).Take(count).ToList();
+            var simplifiedLine = "";
             foreach (var line in lines)
             {
 //                simplifiedLine = HelperMethods.SimplifyWhiteSpaces(line);
-                string[] words = simplifiedLine.Split(new string[] { " ", "\t" }, StringSplitOptions.None);
-                string[] firstWords = words.Take(lineItems).ToArray();
+                var words = simplifiedLine.Split(new[] {" ", "\t"}, StringSplitOptions.None);
+                var firstWords = words.Take(lineItems).ToArray();
                 destinationGrid.Rows.Add(firstWords);
             }
         }
 
-       
+        //delegates
+        private delegate void AddPlanningEntityDelegate(string line);
     }
 }

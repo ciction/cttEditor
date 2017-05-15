@@ -1,17 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Windows.Forms;
 
 namespace cttEditor
 {
-
-    class Room: PlanningEntity
+    internal class Room : PlanningEntity
     {
-        public string RoomName { get; set; }
-        public int RoomCapacity { get; set; }
-
         public Room()
         {
             RoomName = null;
@@ -24,18 +16,22 @@ namespace cttEditor
             RoomCapacity = roomCapacity;
         }
 
+        public string RoomName { get; set; }
+        public int RoomCapacity { get; set; }
+
         public override void ParseCtt(string line)
         {
-//            var simplifiedLine = HelperMethods.SimplifyWhiteSpaces(line);
-//            var words = simplifiedLine.Split(new[] { " ", "\t" }, StringSplitOptions.None);
-//
-//            var i = 0;
-//            CourseCode = words[i++];
-//            TeacherCode = words[i++];
-//            LectureSize = int.Parse(words[i++]);
-//            MinimumWorkingDays = int.Parse(words[i++]);
-//            StudentSize = int.Parse(words[i++]);
-        }
-    }
+            var words = GetStringData(line);
 
+            var i = 0;
+            RoomName = words[i++];
+            RoomCapacity = int.Parse(words[i++]);
+        }
+
+        public void AddToDataGrid(DataGridView destinationGrid)
+        {
+            destinationGrid.Rows.Add(RoomName, RoomCapacity);
+        }
+
+    }
 }
