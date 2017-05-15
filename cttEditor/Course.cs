@@ -3,7 +3,7 @@ using System.Windows.Forms;
 
 namespace cttEditor
 {
-    public class Course : IPlanningEntity
+    public class Course : PlanningEntity
     {
         public Course()
         {
@@ -32,7 +32,12 @@ namespace cttEditor
         public int StudentSize { get; set; }
 
 
-        public void ParseCtt(string line)
+        public void AddToDataGrid(DataGridView destinationGrid)
+        {
+            destinationGrid.Rows.Add(CourseCode, TeacherCode, LectureSize, MinimumWorkingDays, StudentSize);
+        }
+
+        public override void ParseCtt(string line)
         {
             var simplifiedLine = HelperMethods.SimplifyWhiteSpaces(line);
             var words = simplifiedLine.Split(new[] {" ", "\t"}, StringSplitOptions.None);
@@ -43,24 +48,6 @@ namespace cttEditor
             LectureSize = int.Parse(words[i++]);
             MinimumWorkingDays = int.Parse(words[i++]);
             StudentSize = int.Parse(words[i++]);
-        }
-
-        public override string ToString()
-        {
-            var output = GetType().Name + ": { \n";
-            var properties = GetType().GetProperties();
-
-
-            foreach (var property in properties)
-                output += "\t\"" + property.Name + "\":" + "\"" + property.GetValue(this, null) + "\"\n";
-            output += "}\n";
-
-            return output;
-        }
-
-        public void AddToDataGrid(DataGridView destinationGrid)
-        {
-            destinationGrid.Rows.Add(CourseCode, TeacherCode, LectureSize, MinimumWorkingDays, StudentSize);
         }
     }
 }
