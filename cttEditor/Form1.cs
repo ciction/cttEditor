@@ -131,9 +131,8 @@ namespace cttEditor
             var lines = File.ReadLines(file).Skip(firstLine).Take(count).ToList<String>();
             foreach (var line in lines)
             {
-                var simplifiedLine = HelperMethods.SimplifyWhiteSpaces(line);
                 Course newCourse = new Course();
-                newCourse.ParseCtt(simplifiedLine);
+                newCourse.ParseCtt(line);
                 _courses.Add(newCourse);
             }
         }
@@ -149,7 +148,7 @@ namespace cttEditor
             string simplifiedLine = "";
             foreach (var line in lines)
             {
-                simplifiedLine = HelperMethods.SimplifyWhiteSpaces(line);
+//                simplifiedLine = HelperMethods.SimplifyWhiteSpaces(line);
                 string[] words = simplifiedLine.Split(new string[] { " ", "\t" }, StringSplitOptions.None);
                 string[] firstWords = words.Take(lineItems).ToArray();
                 destinationGrid.Rows.Add(firstWords);

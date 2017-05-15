@@ -25,7 +25,6 @@ namespace cttEditor
 
         //ABAP_Objects S.Weemaels 5 1 5
         public string CourseCode { get; set; }
-
         public string TeacherCode { get; set; }
         public int LectureSize { get; set; }
         public int MinimumWorkingDays { get; set; }
@@ -39,8 +38,7 @@ namespace cttEditor
 
         public override void ParseCtt(string line)
         {
-            var simplifiedLine = HelperMethods.SimplifyWhiteSpaces(line);
-            var words = simplifiedLine.Split(new[] {" ", "\t"}, StringSplitOptions.None);
+            var words = GetStringData(line);
 
             var i = 0;
             CourseCode = words[i++];
