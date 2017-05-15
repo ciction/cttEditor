@@ -1,4 +1,6 @@
-﻿namespace cttEditor
+﻿using System;
+
+namespace cttEditor
 {
     partial class Form1
     {
@@ -51,6 +53,8 @@
             this.CurriculaLabel = new System.Windows.Forms.Label();
             this.CurriculaCountLabel = new System.Windows.Forms.Label();
             this.CurriculadataGridView = new System.Windows.Forms.DataGridView();
+            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.UnavailabilityLabel = new System.Windows.Forms.Label();
             this.UnavailabilityCountLabel = new System.Windows.Forms.Label();
             this.ConstraintsDataGridView = new System.Windows.Forms.DataGridView();
@@ -58,17 +62,19 @@
             this.dataGridViewTextBoxColumn9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Timeslot = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.saveButton = new System.Windows.Forms.Button();
-            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn7 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.CourseListBox = new System.Windows.Forms.ListBox();
             this.CourseListLabel = new System.Windows.Forms.Label();
             this.AddCourseButton = new System.Windows.Forms.Button();
             this.RemoveCourseButton = new System.Windows.Forms.Button();
+            this.InactiveCoursesBox = new System.Windows.Forms.ListBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.Curricula = new System.Windows.Forms.GroupBox();
             ((System.ComponentModel.ISupportInitialize)(this.CoursesdataGridView)).BeginInit();
             this.groupBoxGeneral.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RoomsdataGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.CurriculadataGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.ConstraintsDataGridView)).BeginInit();
+            this.Curricula.SuspendLayout();
             this.SuspendLayout();
             // 
             // CoursesdataGridView
@@ -204,7 +210,7 @@
             this.RoomsdataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.dataGridViewTextBoxColumn1,
             this.dataGridViewTextBoxColumn2});
-            this.RoomsdataGridView.Location = new System.Drawing.Point(12, 434);
+            this.RoomsdataGridView.Location = new System.Drawing.Point(15, 476);
             this.RoomsdataGridView.Name = "RoomsdataGridView";
             this.RoomsdataGridView.Size = new System.Drawing.Size(215, 145);
             this.RoomsdataGridView.TabIndex = 5;
@@ -225,7 +231,7 @@
             // RoomsCountLabel
             // 
             this.RoomsCountLabel.AutoSize = true;
-            this.RoomsCountLabel.Location = new System.Drawing.Point(66, 418);
+            this.RoomsCountLabel.Location = new System.Drawing.Point(69, 460);
             this.RoomsCountLabel.Name = "RoomsCountLabel";
             this.RoomsCountLabel.Size = new System.Drawing.Size(13, 13);
             this.RoomsCountLabel.TabIndex = 6;
@@ -234,7 +240,7 @@
             // RoomsLabel
             // 
             this.RoomsLabel.AutoSize = true;
-            this.RoomsLabel.Location = new System.Drawing.Point(12, 418);
+            this.RoomsLabel.Location = new System.Drawing.Point(15, 460);
             this.RoomsLabel.Name = "RoomsLabel";
             this.RoomsLabel.Size = new System.Drawing.Size(43, 13);
             this.RoomsLabel.TabIndex = 7;
@@ -243,7 +249,7 @@
             // CurriculaLabel
             // 
             this.CurriculaLabel.AutoSize = true;
-            this.CurriculaLabel.Location = new System.Drawing.Point(12, 256);
+            this.CurriculaLabel.Location = new System.Drawing.Point(6, 17);
             this.CurriculaLabel.Name = "CurriculaLabel";
             this.CurriculaLabel.Size = new System.Drawing.Size(51, 13);
             this.CurriculaLabel.TabIndex = 1;
@@ -252,7 +258,7 @@
             // CurriculaCountLabel
             // 
             this.CurriculaCountLabel.AutoSize = true;
-            this.CurriculaCountLabel.Location = new System.Drawing.Point(66, 256);
+            this.CurriculaCountLabel.Location = new System.Drawing.Point(63, 17);
             this.CurriculaCountLabel.Name = "CurriculaCountLabel";
             this.CurriculaCountLabel.Size = new System.Drawing.Size(13, 13);
             this.CurriculaCountLabel.TabIndex = 1;
@@ -265,17 +271,28 @@
             this.CurriculadataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
             this.dataGridViewTextBoxColumn3,
             this.dataGridViewTextBoxColumn7});
-            this.CurriculadataGridView.Location = new System.Drawing.Point(12, 272);
+            this.CurriculadataGridView.Location = new System.Drawing.Point(6, 33);
             this.CurriculadataGridView.Name = "CurriculadataGridView";
-            this.CurriculadataGridView.Size = new System.Drawing.Size(244, 132);
+            this.CurriculadataGridView.Size = new System.Drawing.Size(244, 134);
             this.CurriculadataGridView.TabIndex = 0;
             this.CurriculadataGridView.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.CoursesdataGridView_CellValidating);
             this.CurriculadataGridView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.CoursesdataGridView_CellValueChanged);
+            this.CurriculadataGridView.SelectionChanged += new System.EventHandler(this.CurriculadataGridView_SelectionChanged);
+            // 
+            // dataGridViewTextBoxColumn3
+            // 
+            this.dataGridViewTextBoxColumn3.HeaderText = "CurriculumCode";
+            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
+            // 
+            // dataGridViewTextBoxColumn7
+            // 
+            this.dataGridViewTextBoxColumn7.HeaderText = "Course Count";
+            this.dataGridViewTextBoxColumn7.Name = "dataGridViewTextBoxColumn7";
             // 
             // UnavailabilityLabel
             // 
             this.UnavailabilityLabel.AutoSize = true;
-            this.UnavailabilityLabel.Location = new System.Drawing.Point(262, 418);
+            this.UnavailabilityLabel.Location = new System.Drawing.Point(265, 460);
             this.UnavailabilityLabel.Name = "UnavailabilityLabel";
             this.UnavailabilityLabel.Size = new System.Drawing.Size(127, 13);
             this.UnavailabilityLabel.TabIndex = 7;
@@ -284,7 +301,7 @@
             // UnavailabilityCountLabel
             // 
             this.UnavailabilityCountLabel.AutoSize = true;
-            this.UnavailabilityCountLabel.Location = new System.Drawing.Point(395, 418);
+            this.UnavailabilityCountLabel.Location = new System.Drawing.Point(398, 460);
             this.UnavailabilityCountLabel.Name = "UnavailabilityCountLabel";
             this.UnavailabilityCountLabel.Size = new System.Drawing.Size(13, 13);
             this.UnavailabilityCountLabel.TabIndex = 6;
@@ -298,7 +315,7 @@
             this.dataGridViewTextBoxColumn8,
             this.dataGridViewTextBoxColumn9,
             this.Timeslot});
-            this.ConstraintsDataGridView.Location = new System.Drawing.Point(262, 434);
+            this.ConstraintsDataGridView.Location = new System.Drawing.Point(265, 476);
             this.ConstraintsDataGridView.Name = "ConstraintsDataGridView";
             this.ConstraintsDataGridView.Size = new System.Drawing.Size(293, 145);
             this.ConstraintsDataGridView.TabIndex = 5;
@@ -325,22 +342,12 @@
             // 
             // saveButton
             // 
-            this.saveButton.Location = new System.Drawing.Point(480, 594);
+            this.saveButton.Location = new System.Drawing.Point(483, 636);
             this.saveButton.Name = "saveButton";
             this.saveButton.Size = new System.Drawing.Size(75, 23);
             this.saveButton.TabIndex = 8;
             this.saveButton.Text = "Save";
             this.saveButton.UseVisualStyleBackColor = true;
-            // 
-            // dataGridViewTextBoxColumn3
-            // 
-            this.dataGridViewTextBoxColumn3.HeaderText = "CurriculumCode";
-            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
-            // 
-            // dataGridViewTextBoxColumn7
-            // 
-            this.dataGridViewTextBoxColumn7.HeaderText = "Course Count";
-            this.dataGridViewTextBoxColumn7.Name = "dataGridViewTextBoxColumn7";
             // 
             // CourseListBox
             // 
@@ -350,7 +357,7 @@
             "kjsdg",
             "lkjsdmg",
             ""});
-            this.CourseListBox.Location = new System.Drawing.Point(269, 272);
+            this.CourseListBox.Location = new System.Drawing.Point(253, 33);
             this.CourseListBox.Name = "CourseListBox";
             this.CourseListBox.Size = new System.Drawing.Size(120, 134);
             this.CourseListBox.TabIndex = 9;
@@ -358,7 +365,7 @@
             // CourseListLabel
             // 
             this.CourseListLabel.AutoSize = true;
-            this.CourseListLabel.Location = new System.Drawing.Point(266, 254);
+            this.CourseListLabel.Location = new System.Drawing.Point(250, 15);
             this.CourseListLabel.Name = "CourseListLabel";
             this.CourseListLabel.Size = new System.Drawing.Size(59, 13);
             this.CourseListLabel.TabIndex = 1;
@@ -366,30 +373,66 @@
             // 
             // AddCourseButton
             // 
-            this.AddCourseButton.Location = new System.Drawing.Point(395, 354);
+            this.AddCourseButton.Location = new System.Drawing.Point(379, 73);
             this.AddCourseButton.Name = "AddCourseButton";
             this.AddCourseButton.Size = new System.Drawing.Size(90, 23);
             this.AddCourseButton.TabIndex = 10;
-            this.AddCourseButton.Text = "Add course";
+            this.AddCourseButton.Text = "Add";
             this.AddCourseButton.UseVisualStyleBackColor = true;
+            this.AddCourseButton.Click += new System.EventHandler(this.AddCourseButton_Click);
             // 
             // RemoveCourseButton
             // 
-            this.RemoveCourseButton.Location = new System.Drawing.Point(395, 383);
+            this.RemoveCourseButton.Location = new System.Drawing.Point(379, 102);
             this.RemoveCourseButton.Name = "RemoveCourseButton";
             this.RemoveCourseButton.Size = new System.Drawing.Size(90, 23);
             this.RemoveCourseButton.TabIndex = 10;
-            this.RemoveCourseButton.Text = "Remove course";
+            this.RemoveCourseButton.Text = "Remove";
             this.RemoveCourseButton.UseVisualStyleBackColor = true;
+            this.RemoveCourseButton.Click += new System.EventHandler(this.RemoveCourseButton_Click);
+            // 
+            // InactiveCoursesBox
+            // 
+            this.InactiveCoursesBox.FormattingEnabled = true;
+            this.InactiveCoursesBox.Items.AddRange(new object[] {
+            ""});
+            this.InactiveCoursesBox.Location = new System.Drawing.Point(475, 31);
+            this.InactiveCoursesBox.Name = "InactiveCoursesBox";
+            this.InactiveCoursesBox.Size = new System.Drawing.Size(120, 134);
+            this.InactiveCoursesBox.TabIndex = 9;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(472, 15);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(88, 13);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "Inactive courses:";
+            // 
+            // Curricula
+            // 
+            this.Curricula.Controls.Add(this.RemoveCourseButton);
+            this.Curricula.Controls.Add(this.CourseListLabel);
+            this.Curricula.Controls.Add(this.AddCourseButton);
+            this.Curricula.Controls.Add(this.label1);
+            this.Curricula.Controls.Add(this.InactiveCoursesBox);
+            this.Curricula.Controls.Add(this.CourseListBox);
+            this.Curricula.Controls.Add(this.CurriculadataGridView);
+            this.Curricula.Controls.Add(this.CurriculaLabel);
+            this.Curricula.Controls.Add(this.CurriculaCountLabel);
+            this.Curricula.Location = new System.Drawing.Point(12, 257);
+            this.Curricula.Name = "Curricula";
+            this.Curricula.Size = new System.Drawing.Size(598, 177);
+            this.Curricula.TabIndex = 11;
+            this.Curricula.TabStop = false;
+            this.Curricula.Text = "Curricula:";
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(592, 629);
-            this.Controls.Add(this.RemoveCourseButton);
-            this.Controls.Add(this.AddCourseButton);
-            this.Controls.Add(this.CourseListBox);
+            this.ClientSize = new System.Drawing.Size(622, 665);
             this.Controls.Add(this.saveButton);
             this.Controls.Add(this.ConstraintsDataGridView);
             this.Controls.Add(this.RoomsdataGridView);
@@ -398,13 +441,10 @@
             this.Controls.Add(this.UnavailabilityLabel);
             this.Controls.Add(this.RoomsLabel);
             this.Controls.Add(this.groupBoxGeneral);
-            this.Controls.Add(this.CurriculadataGridView);
-            this.Controls.Add(this.CurriculaCountLabel);
             this.Controls.Add(this.CoursesdataGridView);
-            this.Controls.Add(this.CourseListLabel);
-            this.Controls.Add(this.CurriculaLabel);
             this.Controls.Add(this.CoursesCountLabel);
             this.Controls.Add(this.CoursesLabel);
+            this.Controls.Add(this.Curricula);
             this.Name = "Form1";
             this.Text = "Form1";
             ((System.ComponentModel.ISupportInitialize)(this.CoursesdataGridView)).EndInit();
@@ -413,6 +453,8 @@
             ((System.ComponentModel.ISupportInitialize)(this.RoomsdataGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.CurriculadataGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.ConstraintsDataGridView)).EndInit();
+            this.Curricula.ResumeLayout(false);
+            this.Curricula.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -456,6 +498,9 @@
         private System.Windows.Forms.Label CourseListLabel;
         private System.Windows.Forms.Button AddCourseButton;
         private System.Windows.Forms.Button RemoveCourseButton;
+        private System.Windows.Forms.ListBox InactiveCoursesBox;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.GroupBox Curricula;
     }
 }
 

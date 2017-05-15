@@ -8,16 +8,16 @@ namespace cttEditor
 {
     public partial class Form1 : Form
     {
-        private readonly List<Course> _courses = new List<Course>();
-        private readonly List<Room> _rooms = new List<Room>();
         private int _courseCount;
         private int _periodsPerDay;
         private int _roomCount;
+        private int _curriculaCount;
 
 
         public Form1()
         {
             InitializeComponent();
+            
             ReadCtt(
                 @"C:\Users\Christophe\Documents\programming\bachelorproef\ctt_editor\cttEditor\cttEditor\digx_opgesplitst.ctt");
 
@@ -94,18 +94,27 @@ namespace cttEditor
                                 _periodsPerDay = int.Parse(words[1]);
                                 CttPeriodsValue.Text = words[1];
                                 break;
+                            case "Curricula:":
+                                _curriculaCount = int.Parse(words[1]);
+                                CurriculaCountLabel.Text = words[1];
+                                break;
                             case "COURSES:":
                                 ParseDataBlock(linenumber, _courseCount, file, AddCourse);
-                                foreach (var course in _courses)
+                                foreach (var course in EntityDataBase.Courses)
                                     course.AddToDataGrid(CoursesdataGridView);
                                 break;
                             case "ROOMS:":
                                 ParseDataBlock(linenumber, _roomCount, file, AddRoom);
-                                foreach (var room in _rooms)
+                                foreach (var room in EntityDataBase.Rooms)
                                     room.AddToDataGrid(RoomsdataGridView);
                                 break;
                             case "CURRICULA:":
-//                                parseBlockToDatagrid(linenumber, 2, file, this.CurriculadataGridView, 2);
+                                ParseDataBlock(linenumber, _curriculaCount, file, AddCurriculum);
+                                foreach (var curriculum in EntityDataBase.Curricula)
+                                    curriculum.AddToDataGrid(CurriculadataGridView);
+                                //                                EntityDataBase.Curricula[0].CourseCount;
+                                CourseListBox.Items.Clear();
+                                CourseListBox.Items.Add(EntityDataBase.Curricula[0].CourseCount);
                                 break;
                             default:
                                 break;
@@ -137,16 +146,26 @@ namespace cttEditor
         {
             var newCourse = new Course();
             newCourse.ParseCtt(line);
-            _courses.Add(newCourse);
+            EntityDataBase.Courses.Add(newCourse);
         }
 
-        //addPlanningEntity Course
+        //addPlanningEntity Room
         private void AddRoom(string line)
         {
             var newRoom = new Room();
             newRoom.ParseCtt(line);
-            _rooms.Add(newRoom);
+            EntityDataBase.Rooms.Add(newRoom);
         }
+
+        //addPlanningEntity Curriculum
+        private void AddCurriculum(string line)
+        {
+            var newCurriculum = new Curriculum();
+            newCurriculum.ParseCtt(line);
+            EntityDataBase.Curricula.Add(newCurriculum);
+        }
+
+
 
 
         /// <summary>
@@ -169,5 +188,53 @@ namespace cttEditor
 
         //delegates
         private delegate void AddPlanningEntityDelegate(string line);
+
+        private void CurriculadataGridView_SelectionChanged(object sender, EventArgs e)
+        {
+            UpdateCurriculumCourses();
+        }
+
+        private void UpdateCurriculumCourses()
+        {
+            var selectedRow = this.CurriculadataGridView.CurrentCell.RowIndex;
+            var selectedCurriculum = EntityDataBase.Curricula[selectedRow];
+            var inactiveCourses = EntityDataBase.Courses.Except(selectedCurriculum.Courses).ToArray();
+
+            //Update Active course listbox
+            CourseListBox.Items.Clear();
+            foreach (var course in selectedCurriculum.Courses)
+            {
+                CourseListBox.Items.Add(course.CourseCode);
+            }
+
+            //Update Inactive course listbox
+            InactiveCoursesBox.Items.Clear();
+            foreach (var course in inactiveCourses)
+            {
+                InactiveCoursesBox.Items.Add(course.CourseCode);
+            }
+        }
+        private void AddCourseButton_Click(object sender, EventArgs e)
+        {
+            if (InactiveCoursesBox.SelectedItem != null)
+            {
+                var courseCode = InactiveCoursesBox.SelectedItem.ToString();
+                Console.WriteLine(courseCode);
+
+                //find Course by CourseCode
+                int index = EntityDataBase.Courses.IndexOf(EntityDataBase.Courses.FirstOrDefault(c => c.CourseCode == courseCode));
+                var selectedCourse = EntityDataBase.Courses[index];
+
+                var selectedRow = this.CurriculadataGridView.CurrentCell.RowIndex;
+                var selectedCurriculum = EntityDataBase.Curricula[selectedRow];
+                selectedCurriculum.AddCourse(selectedCourse);
+                UpdateCurriculumCourses();
+            }
+        }
+
+        private void RemoveCourseButton_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

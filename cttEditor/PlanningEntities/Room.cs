@@ -2,7 +2,7 @@
 
 namespace cttEditor
 {
-    internal class Room : PlanningEntity
+    public class Room : PlanningEntity
     {
         public Room()
         {

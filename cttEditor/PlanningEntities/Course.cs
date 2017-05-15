@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace cttEditor
@@ -47,5 +48,24 @@ namespace cttEditor
             MinimumWorkingDays = int.Parse(words[i++]);
             StudentSize = int.Parse(words[i++]);
         }
+
+        private sealed class CourseCodeEqualityComparer : IEqualityComparer<Course>
+        {
+            public bool Equals(Course x, Course y)
+            {
+                if (ReferenceEquals(x, y)) return true;
+                if (ReferenceEquals(x, null)) return false;
+                if (ReferenceEquals(y, null)) return false;
+                if (x.GetType() != y.GetType()) return false;
+                return string.Equals(x.CourseCode, y.CourseCode);
+            }
+
+            public int GetHashCode(Course obj)
+            {
+                return (obj.CourseCode != null ? obj.CourseCode.GetHashCode() : 0);
+            }
+        }
+
+        public static IEqualityComparer<Course> CourseCodeComparer { get; } = new CourseCodeEqualityComparer();
     }
 }
