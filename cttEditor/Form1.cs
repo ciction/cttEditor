@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -14,7 +15,9 @@ namespace cttEditor
 {
     public partial class Form1 : Form
     {
+        private List<Course> _courses = new List<Course>();
         private int _courseCount = 0;
+        private int _periodsPerDay = 0;
 
         public Form1()
         {
@@ -29,9 +32,7 @@ namespace cttEditor
 
         }
 
-        private void CoursesdataGridView_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-        }
+
 
         private void CoursesdataGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
@@ -91,8 +92,22 @@ namespace cttEditor
                             case "Courses:":
                                 _courseCount = int.Parse(words[1]);
                                 break;
+                            case "Periods_per_day:":
+                                _periodsPerDay = int.Parse(words[1]);
+                                CttPeriodsValue.Text = words[1];
+                                break;
                             case "COURSES:":
-                                parseCourses(linenumber, file);
+                                ParseCourse(linenumber, _courseCount, file);
+                                foreach (var course in _courses)
+                                {
+                                    course.AddToDataGrid(this.CoursesdataGridView);
+                                }
+                                break;
+                            case "ROOMS:":
+//                                parseBlockToDatagrid(linenumber,2, file, this.RoomsdataGridView);
+                                break;
+                            case "CURRICULA:":
+//                                parseBlockToDatagrid(linenumber, 2, file, this.CurriculadataGridView, 2);
                                 break;
                             default:
                                 break;
@@ -110,16 +125,37 @@ namespace cttEditor
             }
         }
 
-        private void parseCourses(int lineNumber, string file)
+        //Parse Course DataBlock
+        private void ParseCourse(int firstLine,int count, string file)
         {
-            var lines = File.ReadLines(file).Skip(lineNumber).Take(_courseCount).ToList<String>();
+            var lines = File.ReadLines(file).Skip(firstLine).Take(count).ToList<String>();
             foreach (var line in lines)
             {
-                //Console.WriteLine(line);
-                string[] words = line.Split(' ');
-                this.CoursesdataGridView.Rows.Add(words[0], words[1], words[2], words[3], words[4]);
+                var simplifiedLine = HelperMethods.SimplifyWhiteSpaces(line);
+                Course newCourse = new Course();
+                newCourse.ParseCtt(simplifiedLine);
+                _courses.Add(newCourse);
             }
-
         }
+
+
+        /// <summary>
+        /// Parse datablock partially to a datagrid
+        /// </summary>
+        /// <param name="lineItems">only take first n parameters per line</param>
+        private void parseBlockToDatagrid(int firstLine, int count, string file, DataGridView destinationGrid, int lineItems)
+        {
+            var lines = File.ReadLines(file).Skip(firstLine).Take(count).ToList<String>();
+            string simplifiedLine = "";
+            foreach (var line in lines)
+            {
+                simplifiedLine = HelperMethods.SimplifyWhiteSpaces(line);
+                string[] words = simplifiedLine.Split(new string[] { " ", "\t" }, StringSplitOptions.None);
+                string[] firstWords = words.Take(lineItems).ToArray();
+                destinationGrid.Rows.Add(firstWords);
+            }
+        }
+
+       
     }
 }

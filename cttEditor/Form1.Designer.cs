@@ -85,7 +85,6 @@
             this.CoursesdataGridView.Name = "CoursesdataGridView";
             this.CoursesdataGridView.Size = new System.Drawing.Size(543, 148);
             this.CoursesdataGridView.TabIndex = 0;
-            this.CoursesdataGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.CoursesdataGridView_CellContentClick);
             this.CoursesdataGridView.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.CoursesdataGridView_CellValidating);
             this.CoursesdataGridView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.CoursesdataGridView_CellValueChanged);
             // 
@@ -270,7 +269,6 @@
             this.CurriculadataGridView.Name = "CurriculadataGridView";
             this.CurriculadataGridView.Size = new System.Drawing.Size(244, 132);
             this.CurriculadataGridView.TabIndex = 0;
-            this.CurriculadataGridView.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.CoursesdataGridView_CellContentClick);
             this.CurriculadataGridView.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.CoursesdataGridView_CellValidating);
             this.CurriculadataGridView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.CoursesdataGridView_CellValueChanged);
             // 
