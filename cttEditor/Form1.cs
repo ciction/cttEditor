@@ -40,19 +40,48 @@ namespace cttEditor
             RoomsCountLabel.Text = RoomsdataGridView.RowCount.ToString();
         }
 
+        //editing courses
         private void CoursesdataGridView_CellValidating(object sender,
             DataGridViewCellValidatingEventArgs e)
         {
             if (e.ColumnIndex > 1) // 1 should be your column index
             {
-                int i;
+                int i = 0;
+
+                if (e.FormattedValue.ToString().Length <= 0)
+                    return;
 
                 if (!int.TryParse(Convert.ToString(e.FormattedValue), out i))
                 {
                     e.Cancel = true;
-                    MessageBox.Show("please enter a numeric value", "Data not numeric", MessageBoxButtons.OK,
+                    MessageBox.Show(@"please enter a numeric value", @"Data not numeric", MessageBoxButtons.OK,
                         MessageBoxIcon.Exclamation);
                 }
+
+                
+                //try to create a course from all columns
+                if (CoursesdataGridView[0, e.RowIndex].Value != null &&
+                    CoursesdataGridView[1, e.RowIndex].Value != null &&
+                    CoursesdataGridView[2, e.RowIndex].Value != null &&
+                    CoursesdataGridView[3, e.RowIndex].Value != null &&
+                    CoursesdataGridView[4, e.RowIndex].Value != null)
+                {
+                    var newCourse = new Course();
+                    newCourse.CourseCode = CoursesdataGridView[0, e.RowIndex].Value.ToString();
+                    newCourse.TeacherCode = CoursesdataGridView[1, e.RowIndex].Value.ToString();
+                    newCourse.LectureSize = int.Parse(CoursesdataGridView[2, e.RowIndex].Value.ToString());
+                    newCourse.MinimumWorkingDays = int.Parse(CoursesdataGridView[3, e.RowIndex].Value.ToString());
+                    newCourse.StudentSize = int.Parse(CoursesdataGridView[4, e.RowIndex].Value.ToString());
+                    
+                    //add course to the 
+                    if (newCourse.IsValid())
+                        EntityDataBase.Courses.Add(newCourse);
+
+                    //todo prevent adding the same course twice
+                    
+                    //todo update other grids
+                }
+             
             }
         }
 
@@ -209,6 +238,11 @@ namespace cttEditor
                 foreach (var course in inactiveCourses)
                     InactiveCoursesBox.Items.Add(course.CourseCode);
             }
+            else
+            {
+                foreach (var course in EntityDataBase.Courses)
+                    InactiveCoursesBox.Items.Add(course.CourseCode);
+            }
         }
 
         private void AddCourseButton_Click(object sender, EventArgs e)
@@ -296,5 +330,8 @@ namespace cttEditor
         }
         //delegates
         private delegate void AddPlanningEntityDelegate(string line);
+
+
+        
     }
 }

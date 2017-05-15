@@ -61,5 +61,16 @@ namespace cttEditor
             // Delegate...
             return Equals(obj as Course);
         }
+
+        public bool IsValid()
+        {
+            if (CourseCode != null &&
+                TeacherCode != null &&
+                LectureSize != 0 &&
+                MinimumWorkingDays != 0 &&
+                StudentSize != 0)
+                return true;
+            return false;
+        }
     }
 }
