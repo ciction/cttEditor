@@ -31,6 +31,7 @@ namespace cttEditor
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.CoursesdataGridView = new System.Windows.Forms.DataGridView();
             this.CourseCode = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.TeacherCode = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -54,6 +55,8 @@ namespace cttEditor
             this.CurriculaLabel = new System.Windows.Forms.Label();
             this.CurriculaCountLabel = new System.Windows.Forms.Label();
             this.CurriculadataGridView = new System.Windows.Forms.DataGridView();
+            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CurriculumGrid_CourseCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.UnavailabilityLabel = new System.Windows.Forms.Label();
             this.UnavailabilityCountLabel = new System.Windows.Forms.Label();
             this.ConstraintsDataGridView = new System.Windows.Forms.DataGridView();
@@ -68,8 +71,6 @@ namespace cttEditor
             this.InactiveCoursesBox = new System.Windows.Forms.ListBox();
             this.label1 = new System.Windows.Forms.Label();
             this.Curricula = new System.Windows.Forms.GroupBox();
-            this.dataGridViewTextBoxColumn3 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.CurriculumGrid_CourseCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
             ((System.ComponentModel.ISupportInitialize)(this.CoursesdataGridView)).BeginInit();
             this.groupBoxGeneral.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RoomsdataGridView)).BeginInit();
@@ -280,6 +281,17 @@ namespace cttEditor
             this.CurriculadataGridView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.CoursesdataGridView_CellValueChanged);
             this.CurriculadataGridView.SelectionChanged += new System.EventHandler(this.CurriculadataGridView_SelectionChanged);
             // 
+            // dataGridViewTextBoxColumn3
+            // 
+            this.dataGridViewTextBoxColumn3.HeaderText = "CurriculumCode";
+            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
+            // 
+            // CurriculumGrid_CourseCount
+            // 
+            this.CurriculumGrid_CourseCount.HeaderText = "Course Count";
+            this.CurriculumGrid_CourseCount.Name = "CurriculumGrid_CourseCount";
+            this.CurriculumGrid_CourseCount.ReadOnly = true;
+            // 
             // UnavailabilityLabel
             // 
             this.UnavailabilityLabel.AutoSize = true;
@@ -419,17 +431,6 @@ namespace cttEditor
             this.Curricula.TabStop = false;
             this.Curricula.Text = "Curricula:";
             // 
-            // dataGridViewTextBoxColumn3
-            // 
-            this.dataGridViewTextBoxColumn3.HeaderText = "CurriculumCode";
-            this.dataGridViewTextBoxColumn3.Name = "dataGridViewTextBoxColumn3";
-            // 
-            // CurriculumGrid_CourseCount
-            // 
-            this.CurriculumGrid_CourseCount.HeaderText = "Course Count";
-            this.CurriculumGrid_CourseCount.Name = "CurriculumGrid_CourseCount";
-            this.CurriculumGrid_CourseCount.ReadOnly = true;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -447,8 +448,9 @@ namespace cttEditor
             this.Controls.Add(this.CoursesCountLabel);
             this.Controls.Add(this.CoursesLabel);
             this.Controls.Add(this.Curricula);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "CTT Editor";
             ((System.ComponentModel.ISupportInitialize)(this.CoursesdataGridView)).EndInit();
             this.groupBoxGeneral.ResumeLayout(false);
             this.groupBoxGeneral.PerformLayout();
