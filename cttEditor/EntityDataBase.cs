@@ -8,8 +8,8 @@ namespace cttEditor
 {
     public static class EntityDataBase
     {
-        public static List<Course> Courses = new List<Course>();
-        public static List<Room> Rooms = new List<Room>();
-        public static List<Curriculum> Curricula = new List<Curriculum>();
+        public static HashSet<Course> Courses = new HashSet<Course>();
+        public static HashSet<Room> Rooms = new HashSet<Room>();
+        public static HashSet<Curriculum> Curricula = new HashSet<Curriculum>();
     }
 }

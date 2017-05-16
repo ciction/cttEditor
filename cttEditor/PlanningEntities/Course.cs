@@ -1,9 +1,8 @@
-﻿using System;
-using System.Windows.Forms;
+﻿using System.Windows.Forms;
 
 namespace cttEditor
 {
-    public class Course : PlanningEntity, IEquatable<Course>
+    public class Course : PlanningEntity
     {
         public Course()
         {
@@ -31,13 +30,6 @@ namespace cttEditor
         public int MinimumWorkingDays { get; set; }
         public int StudentSize { get; set; }
 
-        public bool Equals(Course other)
-        {
-            if (ReferenceEquals(null, other)) return false;
-            if (ReferenceEquals(this, other)) return true;
-            return string.Equals(CourseCode, other.CourseCode);
-        }
-
 
         public void AddToDataGrid(DataGridView destinationGrid)
         {
@@ -56,11 +48,6 @@ namespace cttEditor
             StudentSize = int.Parse(words[i++]);
         }
 
-        public override bool Equals(object obj)
-        {
-            // Delegate...
-            return Equals(obj as Course);
-        }
 
         public bool IsValid()
         {
@@ -71,6 +58,20 @@ namespace cttEditor
                 StudentSize != 0)
                 return true;
             return false;
+        }
+
+
+        // compare based on courseName (for hashset and lists)
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            var other = obj as Course;
+            return string.Equals(CourseCode, other.CourseCode);
+        }
+
+        public override int GetHashCode()
+        {
+            return CourseCode.GetHashCode();
         }
     }
 }

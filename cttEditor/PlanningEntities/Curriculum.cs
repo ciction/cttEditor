@@ -31,9 +31,8 @@ namespace cttEditor
             foreach (var course in courses)
             {
                 //find course with CourseCode
-                var index = EntityDataBase.Courses.IndexOf(
-                    EntityDataBase.Courses.FirstOrDefault(c => c.CourseCode == course));
-                var newCourse = EntityDataBase.Courses[index];
+                var newCourse = EntityDataBase.Courses.FirstOrDefault(c => c.CourseCode == course);
+
                 Courses.Add(newCourse);
             }
         }

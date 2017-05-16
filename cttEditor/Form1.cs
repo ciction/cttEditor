@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
@@ -17,8 +18,9 @@ namespace cttEditor
         {
             InitializeComponent();
 
-            ReadCtt(
-                @"C:\Users\Christophe\Documents\programming\bachelorproef\ctt_editor\cttEditor\cttEditor\digx_opgesplitst.ctt");
+            //Console.WriteLine(Directory.GetCurrentDirectory());
+            //ReadCtt(@"C:\Users\Christophe\Documents\programming\bachelorproef\ctt_editor\cttEditor\cttEditor\digx_opgesplitst.ctt");
+            ReadCtt(@"digx_opgesplitst.ctt");
 
             //init fields
             CoursesCountLabel.Text = (CoursesdataGridView.RowCount - 1).ToString();
@@ -46,7 +48,7 @@ namespace cttEditor
         {
             if (e.ColumnIndex > 1) // 1 should be your column index
             {
-                int i = 0;
+                var i = 0;
 
                 if (e.FormattedValue.ToString().Length <= 0)
                     return;
@@ -57,31 +59,28 @@ namespace cttEditor
                     MessageBox.Show(@"please enter a numeric value", @"Data not numeric", MessageBoxButtons.OK,
                         MessageBoxIcon.Exclamation);
                 }
+            }
+            //try to create a course from all columns
+            if (CoursesdataGridView[0, e.RowIndex].Value != null &&
+                CoursesdataGridView[1, e.RowIndex].Value != null &&
+                CoursesdataGridView[2, e.RowIndex].Value != null &&
+                CoursesdataGridView[3, e.RowIndex].Value != null &&
+                CoursesdataGridView[4, e.RowIndex].Value != null)
+            {
+                var newCourse = new Course();
+                newCourse.CourseCode = CoursesdataGridView[0, e.RowIndex].Value.ToString();
+                newCourse.TeacherCode = CoursesdataGridView[1, e.RowIndex].Value.ToString();
+                newCourse.LectureSize = int.Parse(CoursesdataGridView[2, e.RowIndex].Value.ToString());
+                newCourse.MinimumWorkingDays = int.Parse(CoursesdataGridView[3, e.RowIndex].Value.ToString());
+                newCourse.StudentSize = int.Parse(CoursesdataGridView[4, e.RowIndex].Value.ToString());
 
-                
-                //try to create a course from all columns
-                if (CoursesdataGridView[0, e.RowIndex].Value != null &&
-                    CoursesdataGridView[1, e.RowIndex].Value != null &&
-                    CoursesdataGridView[2, e.RowIndex].Value != null &&
-                    CoursesdataGridView[3, e.RowIndex].Value != null &&
-                    CoursesdataGridView[4, e.RowIndex].Value != null)
-                {
-                    var newCourse = new Course();
-                    newCourse.CourseCode = CoursesdataGridView[0, e.RowIndex].Value.ToString();
-                    newCourse.TeacherCode = CoursesdataGridView[1, e.RowIndex].Value.ToString();
-                    newCourse.LectureSize = int.Parse(CoursesdataGridView[2, e.RowIndex].Value.ToString());
-                    newCourse.MinimumWorkingDays = int.Parse(CoursesdataGridView[3, e.RowIndex].Value.ToString());
-                    newCourse.StudentSize = int.Parse(CoursesdataGridView[4, e.RowIndex].Value.ToString());
-                    
-                    //add course to the 
-                    if (newCourse.IsValid())
-                        EntityDataBase.Courses.Add(newCourse);
+                //add course to the 
+                if (newCourse.IsValid())
+                    EntityDataBase.Courses.Add(newCourse);
 
-                    //todo prevent adding the same course twice
-                    
-                    //todo update other grids
-                }
-             
+                //todo prevent adding the same course twice
+
+                //todo update other grids
             }
         }
 
@@ -142,7 +141,7 @@ namespace cttEditor
                                     curriculum.AddToDataGrid(CurriculadataGridView);
                                 //                                EntityDataBase.Curricula[0].CourseCount;
                                 CourseListBox.Items.Clear();
-                                CourseListBox.Items.Add(EntityDataBase.Curricula[0].CourseCount);
+//                                CourseListBox.Items.Add(EntityDataBase.Curricula[0].CourseCount);
                                 break;
                             default:
                                 break;
@@ -261,13 +260,15 @@ namespace cttEditor
                 {
                     Console.WriteLine(exception);
                 }
-
             }
         }
 
         private void RemoveCourseButton_Click(object sender, EventArgs e)
         {
             var selectedCourse = GetSelectedActiveCourse();
+            if (selectedCourse == null)
+                return;
+
             var selectedCurriculum = GetSelectedCuriculum();
 
 
@@ -280,7 +281,6 @@ namespace cttEditor
             {
                 Console.WriteLine(exception);
             }
-
         }
 
         private Course GetSelectedInactiveCourse()
@@ -290,15 +290,9 @@ namespace cttEditor
                 var courseCode = InactiveCoursesBox.SelectedItem.ToString();
 
                 //find Course by 
-                var index = EntityDataBase.Courses.IndexOf(
-                    EntityDataBase.Courses.FirstOrDefault(c => c.CourseCode == courseCode));
-                return EntityDataBase.Courses[index];
+                  return EntityDataBase.Courses.FirstOrDefault(c => c.CourseCode == courseCode);
             }
-            else
-            {
-                return null;
-            }
-          
+            return null;
         }
 
         private Course GetSelectedActiveCourse()
@@ -306,17 +300,9 @@ namespace cttEditor
             if (CourseListBox.SelectedItem != null)
             {
                 var courseCode = CourseListBox.SelectedItem.ToString();
-
-                //find Course by 
-                var index = EntityDataBase.Courses.IndexOf(
-                    EntityDataBase.Courses.FirstOrDefault(c => c.CourseCode == courseCode));
-                return EntityDataBase.Courses[index];
+                return EntityDataBase.Courses.FirstOrDefault(c => c.CourseCode == courseCode);
             }
-            else
-            {
-                return null;
-            }
-
+            return null;
         }
 
         private Curriculum GetSelectedCuriculum()
@@ -324,14 +310,14 @@ namespace cttEditor
             var selectedRow = CurriculadataGridView.CurrentCell.RowIndex;
             if (selectedRow < EntityDataBase.Curricula.Count)
             {
-                return EntityDataBase.Curricula[selectedRow];
+                //                return EntityDataBase.Curricula[selectedRow];
+                List<Curriculum> Curricula = EntityDataBase.Curricula.ToList();
+                return Curricula[selectedRow];
             }
             return null;
         }
+
         //delegates
         private delegate void AddPlanningEntityDelegate(string line);
-
-
-        
     }
 }
