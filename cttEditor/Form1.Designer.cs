@@ -95,6 +95,7 @@ namespace cttEditor
             this.CoursesdataGridView.TabIndex = 0;
             this.CoursesdataGridView.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.CoursesdataGridView_CellValidating);
             this.CoursesdataGridView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.CoursesdataGridView_CellValueChanged);
+            this.CoursesdataGridView.UserDeletingRow += new DataGridViewRowCancelEventHandler(this.CoursesdataGridView_UserDeletingRow);
             // 
             // CourseCode
             // 

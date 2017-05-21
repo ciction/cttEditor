@@ -30,10 +30,81 @@ namespace cttEditor
         }
 
 
-        //Course grid label
+        /// <summary>
+        /// Course grid
+        /// when changing the courses in te grid
+        ///  - update the course count
+        ///  - update the courses list for curricula
+        /// </summary>
         private void CoursesdataGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
             CoursesCountLabel.Text = CoursesdataGridView.RowCount.ToString();
+            if(e.RowIndex < 0)
+                return;
+
+            //try to create a course from all columns
+            if (CoursesdataGridView[0, e.RowIndex].Value != null &&
+                CoursesdataGridView[1, e.RowIndex].Value != null &&
+                CoursesdataGridView[2, e.RowIndex].Value != null &&
+                CoursesdataGridView[3, e.RowIndex].Value != null &&
+                CoursesdataGridView[4, e.RowIndex].Value != null)
+            {
+                var newCourse = new Course();
+                newCourse.CourseCode = CoursesdataGridView[0, e.RowIndex].Value.ToString();
+                newCourse.TeacherCode = CoursesdataGridView[1, e.RowIndex].Value.ToString();
+                newCourse.LectureSize = int.Parse(CoursesdataGridView[2, e.RowIndex].Value.ToString());
+                newCourse.MinimumWorkingDays = int.Parse(CoursesdataGridView[3, e.RowIndex].Value.ToString());
+                newCourse.StudentSize = int.Parse(CoursesdataGridView[4, e.RowIndex].Value.ToString());
+
+                //add course to the 
+                if (newCourse.IsValid())
+                {
+                    if (!EntityDataBase.Courses.Contains(newCourse))
+                    {
+                        EntityDataBase.Courses.Add(newCourse);
+                        //Update the available courses for curricula (UI)
+                        UpdateCurriculumCourses();
+                    }
+                }
+
+                //todo prevent adding the same course twice
+
+                //todo update other grids (WIP)
+            }
+        }
+
+       
+     
+
+        /// <summary>
+        /// Course grid
+        /// when a row gets deleted: remove that course from existing curricula
+        /// update the UI 
+        /// </summary>
+        private void CoursesdataGridView_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+        {
+            int rowIndex = e.Row.Index;
+            if (rowIndex < 0)
+                return;
+            var cells = CoursesdataGridView.Rows[rowIndex].Cells;
+
+            var courseToDelete = new Course();
+            courseToDelete.CourseCode = CoursesdataGridView[0, rowIndex].Value.ToString();
+            courseToDelete.TeacherCode = CoursesdataGridView[1, rowIndex].Value.ToString();
+            courseToDelete.LectureSize = int.Parse(CoursesdataGridView[2, rowIndex].Value.ToString());
+            courseToDelete.MinimumWorkingDays = int.Parse(CoursesdataGridView[3, rowIndex].Value.ToString());
+            courseToDelete.StudentSize = int.Parse(CoursesdataGridView[4, rowIndex].Value.ToString());
+            
+            EntityDataBase.Courses.Remove(courseToDelete);
+
+            foreach (var curriculum in EntityDataBase.Curricula)
+            {
+                curriculum.Courses.Remove(courseToDelete);
+            }
+            //update UI
+            UpdateCurriculumCourses()
+                //todo update course count in curriculum gird
+                //todo fix error on the list of avalable courses after a delete
         }
 
         //Rooms grid label
@@ -43,6 +114,7 @@ namespace cttEditor
         }
 
         //editing courses
+        //when finished entering a value in the grid
         private void CoursesdataGridView_CellValidating(object sender,
             DataGridViewCellValidatingEventArgs e)
         {
@@ -60,28 +132,7 @@ namespace cttEditor
                         MessageBoxIcon.Exclamation);
                 }
             }
-            //try to create a course from all columns
-            if (CoursesdataGridView[0, e.RowIndex].Value != null &&
-                CoursesdataGridView[1, e.RowIndex].Value != null &&
-                CoursesdataGridView[2, e.RowIndex].Value != null &&
-                CoursesdataGridView[3, e.RowIndex].Value != null &&
-                CoursesdataGridView[4, e.RowIndex].Value != null)
-            {
-                var newCourse = new Course();
-                newCourse.CourseCode = CoursesdataGridView[0, e.RowIndex].Value.ToString();
-                newCourse.TeacherCode = CoursesdataGridView[1, e.RowIndex].Value.ToString();
-                newCourse.LectureSize = int.Parse(CoursesdataGridView[2, e.RowIndex].Value.ToString());
-                newCourse.MinimumWorkingDays = int.Parse(CoursesdataGridView[3, e.RowIndex].Value.ToString());
-                newCourse.StudentSize = int.Parse(CoursesdataGridView[4, e.RowIndex].Value.ToString());
-
-                //add course to the 
-                if (newCourse.IsValid())
-                    EntityDataBase.Courses.Add(newCourse);
-
-                //todo prevent adding the same course twice
-
-                //todo update other grids
-            }
+           
         }
 
 
@@ -197,12 +248,12 @@ namespace cttEditor
         ///     Parse datablock partially to a datagrid
         /// </summary>
         /// <param name="lineItems">only take first n parameters per line</param>
-        private void parseBlockToDatagrid(int firstLine, int count, string file, DataGridView destinationGrid,
+        private void ParseBlockToDatagrid(int firstLine, int count, string file, DataGridView destinationGrid,
             int lineItems)
         {
             var lines = File.ReadLines(file).Skip(firstLine).Take(count).ToList();
             var simplifiedLine = "";
-            foreach (var line in lines)
+            foreach (var line in lines) 
             {
 //                simplifiedLine = HelperMethods.SimplifyWhiteSpaces(line);
                 var words = simplifiedLine.Split(new[] {" ", "\t"}, StringSplitOptions.None);
@@ -216,7 +267,11 @@ namespace cttEditor
             UpdateCurriculumCourses();
         }
 
-        private void UpdateCurriculumCourses()
+        /// <summary>
+        /// UI: - Update the list of inactive courses for the current curriculum    (InactiveCoursesBox)
+        ///     - Update the list of active courses for the current curriculum      (CourseListBox)
+        /// </summary>
+        public void UpdateCurriculumCourses()
         {
             CourseListBox.Items.Clear();
             InactiveCoursesBox.Items.Clear();
@@ -319,5 +374,8 @@ namespace cttEditor
 
         //delegates
         private delegate void AddPlanningEntityDelegate(string line);
+
+
+       
     }
 }

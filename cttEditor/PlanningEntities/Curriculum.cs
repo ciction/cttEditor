@@ -6,19 +6,30 @@ namespace cttEditor
 {
     public class Curriculum : PlanningEntity
     {
+
         public Curriculum()
         {
+            InitCoursesListener();
         }
 
         public Curriculum(string curriculumCode, int courseCount)
         {
             CurriculumCode = curriculumCode;
             CourseCount = courseCount;
+            InitCoursesListener();
+        }
+
+        private void InitCoursesListener()
+        {
+            Courses.OnRemove += (sender, args) =>
+            {
+                CourseCount = Courses.Count;
+            };
         }
 
         public string CurriculumCode { get; set; }
         public int CourseCount { get; set; }
-        public List<Course> Courses { get; } = new List<Course>();
+        public EventTriggeringList<Course> Courses { get; } = new EventTriggeringList<Course>();
 
         public override void ParseCtt(string line)
         {
