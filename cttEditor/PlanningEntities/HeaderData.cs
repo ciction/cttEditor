@@ -1,0 +1,77 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace cttEditor.PlanningEntities
+{
+    public enum Language { Dutch, English };
+
+    class HeaderData
+    {
+        /*
+            Name: EHB
+            Language: NL
+            StartDate: 04/06/2017
+            Courses: 5
+            TeacherGroupCount: 1
+            Rooms: 3
+            Days: 11
+            Periods_per_day: 9
+            Curricula: 2
+            unavailable_courses: 2
+            unavailable_curricula: 3
+            unavailable_hours_all: 2
+            unavailable_days_all: 1
+            DependentCoursesCount: 1
+         */
+
+        public String PlanningName { get; set; }
+        public Language Language { get; set; }
+        public DateTime StartDate { get; set; }
+        public int CourseCount { get; set; }
+        public int TeacherGroupCount { get; set; }
+        public int RoomCount { get; set; }
+        public int DaysCount { get; set; }
+        public int PeriodsPerDay { get; set; }
+        public int CurriculaCount { get; set; }
+        public int UnavailableCoursesCount  { get; set; }
+        public int UnavailableCurriculaCount  { get; set; }
+        public int UnavailableHoursAllCount  { get; set; }
+        public int UnavailableDaysAllCount  { get; set; }
+        public int DependentCoursesCount  { get; set; }
+
+        public HeaderData()
+        {
+        }
+
+        public void SetLanguage(string languageCode)
+        {
+            switch (languageCode)
+            {
+                case "NL":
+                    this.Language = Language.Dutch;
+                    break;
+                case "ENG":
+                    this.Language = Language.English;
+                    break;
+                default:
+                    this.Language = Language.English;
+                    MessageBox.Show(
+                        string.Format("Warning: language code <{0}> is not supported,\n the default language has been set to English ",languageCode), @"Unsuported language code");
+                    break;
+
+            }
+        }
+
+        public void SetStartDate(string dateString)
+        {
+            var dateTime = DateTime.ParseExact(dateString, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+            this.StartDate = dateTime;
+        }
+    }               
+}                   
+                    

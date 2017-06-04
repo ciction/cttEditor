@@ -1,9 +1,13 @@
-﻿using System.Windows.Forms;
+﻿using System;
+using System.Globalization;
+using System.Windows.Forms;
 
 namespace cttEditor
 {
     public class Course : PlanningEntity
     {
+        public enum DateType{Maximum,Minium};
+
         public Course()
         {
             CourseCode = null;
@@ -30,6 +34,13 @@ namespace cttEditor
         public int MinimumWorkingDays { get; set; }
         public int StudentSize { get; set; }
 
+        public DateTime MinimumDate { get; set; }
+        public DateTime DeadlineDate { get; set; }
+
+        public int MaximumWorkingDays { get; set; }
+        public bool IsPcNeeded { get; set; }
+        public int HoursPerDay { get; set; }
+
 
         public void AddToDataGrid(DataGridView destinationGrid)
         {
@@ -42,11 +53,64 @@ namespace cttEditor
 
             var i = 0;
             CourseCode = words[i++];
+            if (CourseCode.EndsWith("_WK"))
+            {
+                HoursPerDay = 3;
+            }
+            else
+            {
+                HoursPerDay = 2;
+            }
             TeacherCode = words[i++];
             LectureSize = int.Parse(words[i++]);
             MinimumWorkingDays = int.Parse(words[i++]);
             StudentSize = int.Parse(words[i++]);
+
+            MinimumDate = ParseDate(words[i++], DateType.Minium);
+            DeadlineDate = ParseDate(words[i++], DateType.Maximum);
+
+            MaximumWorkingDays = ParseMaximumValue(words[i++]);
+
+            if (words.Length >= 9)
+            {
+            IsPcNeeded = bool.Parse(words[i++]);
+
+            }
+            if (words.Length >= 10)
+            {
+                HoursPerDay = int.Parse(words[i++]);
+            }
         }
+
+        private DateTime ParseDate(string dateString, DateType dateType)
+        {
+            DateTime dateTime = new DateTime();
+
+            if (!dateString.Equals("/"))
+            {
+                dateTime = DateTime.ParseExact(dateString, "dd/MM/yyyy", CultureInfo.InvariantCulture);
+            }
+            else
+            {
+                //                set default value
+                if (dateType == DateType.Maximum)
+                {
+                    dateTime = DateTime.MaxValue;
+                }
+            }
+            return dateTime;
+        }
+
+        private int ParseMaximumValue(string intString)
+        {
+            int value = int.MaxValue;
+            if (!intString.Equals("/"))
+            {
+                value = int.Parse(intString);
+            }
+            return value;
+        }
+
 
 
         public bool IsValid()

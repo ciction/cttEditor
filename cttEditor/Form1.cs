@@ -3,15 +3,14 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Windows.Forms;
+using cttEditor.PlanningEntities;
 
 namespace cttEditor
 {
     public partial class Form1 : Form
     {
-        private int _courseCount;
-        private int _curriculaCount;
-        private int _periodsPerDay;
-        private int _roomCount;
+        private readonly HeaderData _headerData = new HeaderData();
+     
 
 
         public Form1()
@@ -102,9 +101,9 @@ namespace cttEditor
                 curriculum.Courses.Remove(courseToDelete);
             }
             //update UI
-            UpdateCurriculumCourses()
-                //todo update course count in curriculum gird
-                //todo fix error on the list of avalable courses after a delete
+            UpdateCurriculumCourses();
+            //todo update course count in curriculum gird
+            //todo fix error on the list of avalable courses after a delete
         }
 
         //Rooms grid label
@@ -155,44 +154,87 @@ namespace cttEditor
                         switch (words[0])
                         {
                             case "Name:":
-                                CttNameValue.Text = words[1];
+                                _headerData.PlanningName = words[1];
+                                CttNameValue.Text = _headerData.PlanningName;
                                 break;
-                            case "Days:":
-                                CttDaysValue.Text = words[1];
+                            case "Language:":
+                                _headerData.SetLanguage(words[1]);
+                                break;
+                            case "StartDate:":
+                                _headerData.SetStartDate(words[1]);
                                 break;
                             case "Courses:":
-                                _courseCount = int.Parse(words[1]);
-                                CoursesCountLabel.Text = _courseCount.ToString();
+                                _headerData.CourseCount = int.Parse(words[1]);
+                                CoursesCountLabel.Text = _headerData.CourseCount.ToString();
+                                break;
+                            case "TeacherGroupCount:":
+                                _headerData.TeacherGroupCount = int.Parse(words[1]);
                                 break;
                             case "Rooms:":
-                                _roomCount = int.Parse(words[1]);
-                                RoomsCountLabel.Text = _roomCount.ToString();
+                                _headerData.RoomCount = int.Parse(words[1]);
+                                RoomsCountLabel.Text = _headerData.RoomCount.ToString();
+                                break;
+                            case "Days:":
+                                _headerData.DaysCount = int.Parse(words[1]);
+                                CttDaysValue.Text = _headerData.DaysCount.ToString();
                                 break;
                             case "Periods_per_day:":
-                                _periodsPerDay = int.Parse(words[1]);
-                                CttPeriodsValue.Text = words[1];
+                                _headerData.PeriodsPerDay = int.Parse(words[1]);
+                                CttPeriodsValue.Text = _headerData.PeriodsPerDay.ToString();
                                 break;
                             case "Curricula:":
-                                _curriculaCount = int.Parse(words[1]);
-                                CurriculaCountLabel.Text = words[1];
+                                _headerData.CurriculaCount = int.Parse(words[1]);
+                                CurriculaCountLabel.Text = _headerData.CurriculaCount.ToString();
                                 break;
+                            case "unavailable_courses:":
+                                _headerData.UnavailableCoursesCount = int.Parse(words[1]);
+
+                                break;
+                            case "unavailable_curricula:":
+                                _headerData.UnavailableCurriculaCount = int.Parse(words[1]);
+                                break;
+                            case "unavailable_hours_all:":
+                                _headerData.UnavailableHoursAllCount = int.Parse(words[1]);
+                                break;
+                            case "unavailable_days_all:":
+                                _headerData.UnavailableDaysAllCount = int.Parse(words[1]);
+                                break;
+                            case "DependentCourses:":
+                                _headerData.DependentCoursesCount = int.Parse(words[1]);
+                                break;
+
+
+                             //blocks
                             case "COURSES:":
-                                ParseDataBlock(linenumber, _courseCount, file, AddCourse);
+                                //skip first info line and parse data
+                                ParseDataBlock(linenumber+1, _headerData.CourseCount, file, AddCourse);
                                 foreach (var course in EntityDataBase.Courses)
                                     course.AddToDataGrid(CoursesdataGridView);
                                 break;
+                            case "TEACHER_GROUPS:":
+                                break;
                             case "ROOMS:":
-                                ParseDataBlock(linenumber, _roomCount, file, AddRoom);
+                                ParseDataBlock(linenumber+1, _headerData.RoomCount, file, AddRoom);
                                 foreach (var room in EntityDataBase.Rooms)
                                     room.AddToDataGrid(RoomsdataGridView);
                                 break;
                             case "CURRICULA:":
-                                ParseDataBlock(linenumber, _curriculaCount, file, AddCurriculum);
+                                ParseDataBlock(linenumber+1, _headerData.CurriculaCount, file, AddCurriculum);
                                 foreach (var curriculum in EntityDataBase.Curricula)
                                     curriculum.AddToDataGrid(CurriculadataGridView);
                                 //                                EntityDataBase.Curricula[0].CourseCount;
                                 CourseListBox.Items.Clear();
 //                                CourseListBox.Items.Add(EntityDataBase.Curricula[0].CourseCount);
+                                break;
+                            case "UNAVAILABILITY_COURSE:":
+                                break;
+                            case "UNAVAILABILITY_CURRICULUM:":
+                                break;
+                            case "UNAVAILABLE_HOURS_ALL:":
+                                break;
+                            case "UNAVAILABLE_DAYS_ALL:":
+                                break;
+                            case "DEPENDENCIES:":
                                 break;
                             default:
                                 break;
