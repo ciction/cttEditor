@@ -17,12 +17,43 @@ namespace cttEditor.PlanningEntities
             CourseCount = courseCount;
             InitCoursesListener();
         }
+        
+        //make a curriculum with only a name
+        private Curriculum(string curriculumCode)
+        {
+            CurriculumCode = curriculumCode;
+        }
+        
+        //get from database - simple
+        public static Curriculum FromDatabase(string curriculumCode)
+        {
+            return  EntityDataBase.Curricula.FirstOrDefault(c => c.CurriculumCode == curriculumCode);
+        }
+
+        //get from database - DataGridView
+        public static Curriculum FromDatabase(DataGridView datagridView, int i = -1)
+        {
+            if (i == -1)
+                if (datagridView.CurrentRow != null) i = datagridView.CurrentRow.Index;
+
+            if (i == -1) return null;
+            //new curriculum with code
+                string curriculumCode = datagridView[0, i].CellValue();
+                Curriculum curriculum = FromDatabase(curriculumCode);
+                return curriculum;
+        }
 
         private void InitCoursesListener()
         {
             Courses.OnRemove += (sender, args) =>
             {
-                CourseCount = Courses.Count;
+                if(CourseCount > 0)
+                    CourseCount = Courses.Count - 1;
+            };
+
+            Courses.OnAdd += (sender, args) =>
+            {
+                CourseCount = Courses.Count + 1;
             };
         }
 
@@ -57,14 +88,14 @@ namespace cttEditor.PlanningEntities
                 return false;
 
             Courses.Add(course);
-            ++CourseCount;
+//            ++CourseCount;
             return true;
         }
 
         public bool RemoveCourse(Course course)
         {
             Courses.Remove(course);
-            --CourseCount;
+//            --CourseCount;
             return true;
         }
 

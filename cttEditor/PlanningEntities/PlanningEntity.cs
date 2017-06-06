@@ -1,17 +1,18 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 
-namespace cttEditor
+namespace cttEditor.PlanningEntities
 {
     public abstract class PlanningEntity
     {
         public abstract void ParseCtt(string line);
 
+
         protected static string SimplifyWhiteSpaces(string line)
         {
             return Regex.Replace(line, @"\s+", " ");
         }
+
 
       protected string[] GetStringData(string line)
         {

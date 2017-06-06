@@ -184,6 +184,7 @@ namespace cttEditor
             this.comboBoxLanguage.Name = "comboBoxLanguage";
             this.comboBoxLanguage.Size = new System.Drawing.Size(121, 21);
             this.comboBoxLanguage.TabIndex = 13;
+            this.comboBoxLanguage.SelectedIndexChanged += new System.EventHandler(this.comboBoxLanguage_SelectedIndexChanged);
             // 
             // startDateTimePicker
             // 
@@ -191,6 +192,7 @@ namespace cttEditor
             this.startDateTimePicker.Name = "startDateTimePicker";
             this.startDateTimePicker.Size = new System.Drawing.Size(180, 20);
             this.startDateTimePicker.TabIndex = 13;
+            this.startDateTimePicker.ValueChanged += new System.EventHandler(this.startDateTimePicker_ValueChanged);
             // 
             // CttPeriodsValue
             // 
@@ -199,6 +201,7 @@ namespace cttEditor
             this.CttPeriodsValue.Size = new System.Drawing.Size(31, 20);
             this.CttPeriodsValue.TabIndex = 7;
             this.CttPeriodsValue.Text = "0";
+            this.CttPeriodsValue.TextChanged += new System.EventHandler(this.CttPeriodsValue_TextChanged);
             // 
             // CttDaysValue
             // 
@@ -207,6 +210,7 @@ namespace cttEditor
             this.CttDaysValue.Size = new System.Drawing.Size(68, 20);
             this.CttDaysValue.TabIndex = 7;
             this.CttDaysValue.Text = "0";
+            this.CttDaysValue.TextChanged += new System.EventHandler(this.CttDaysValue_TextChanged);
             // 
             // CttPeriodsLabel
             // 
@@ -261,6 +265,7 @@ namespace cttEditor
             this.CttNameValue.Size = new System.Drawing.Size(95, 20);
             this.CttNameValue.TabIndex = 3;
             this.CttNameValue.Text = "test";
+            this.CttNameValue.TextChanged += new System.EventHandler(this.CttNameValue_TextChanged);
             // 
             // flowLayoutPanel1
             // 
@@ -281,6 +286,7 @@ namespace cttEditor
             this.exitButton.TabIndex = 8;
             this.exitButton.Text = "Cancel";
             this.exitButton.UseVisualStyleBackColor = true;
+            this.exitButton.Click += new System.EventHandler(this.exitButton_Click);
             // 
             // saveButton
             // 
@@ -290,6 +296,7 @@ namespace cttEditor
             this.saveButton.TabIndex = 8;
             this.saveButton.Text = "Save";
             this.saveButton.UseVisualStyleBackColor = true;
+            this.saveButton.Click += new System.EventHandler(this.saveButton_Click);
             // 
             // Tabs
             // 
@@ -712,7 +719,6 @@ namespace cttEditor
             this.CurriculaDataGridView.Name = "CurriculaDataGridView";
             this.CurriculaDataGridView.Size = new System.Drawing.Size(244, 134);
             this.CurriculaDataGridView.TabIndex = 0;
-            this.CurriculaDataGridView.SelectionChanged += CurriculaDataGridViewSelectionChanged;
             // 
             // dataGridViewTextBoxColumn3
             // 

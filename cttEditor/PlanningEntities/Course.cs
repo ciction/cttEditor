@@ -1,14 +1,25 @@
 ﻿using System;
 using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Windows.Forms;
-using cttEditor.PlanningEntities;
 
-namespace cttEditor
+namespace cttEditor.PlanningEntities
 {
     public class Course : PlanningEntity
     {
         public enum DateType{Maximum,Minium};
+
+        public string CourseCode { get; set; }
+        public string TeacherCode { get; set; }
+        public int LectureSize { get; set; }
+        public int MinimumWorkingDays { get; set; }
+        public int StudentSize { get; set; }
+        public DateTime MinimumDate { get; set; }
+        public DateTime DeadlineDate { get; set; }
+        public int MaximumWorkingDays { get; set; }
+        public bool IsPcNeeded { get; set; }
+        public int HoursPerDay { get; set; }
 
         public Course()
         {
@@ -28,32 +39,57 @@ namespace cttEditor
             StudentSize = studentSize;
         }
 
-        //ABAP_Objects S.Weemaels 5 1 5
-        public string CourseCode { get; set; }
 
-        public string TeacherCode { get; set; }
-        public int LectureSize { get; set; }
-        public int MinimumWorkingDays { get; set; }
-        public int StudentSize { get; set; }
+        //*****************************************
+        // DATABASE
+        //*****************************************
 
-        public DateTime MinimumDate { get; set; }
-        public DateTime DeadlineDate { get; set; }
-
-        public int MaximumWorkingDays { get; set; }
-        public bool IsPcNeeded { get; set; }
-        public int HoursPerDay { get; set; }
-
-
-        public void AddToDataGrid(DataGridView destinationGrid)
+        //get from database - simple
+        public static Course FromDatabase(string courseCode)
         {
-            //convert minmium and maximum values to /
-            var minimumDateString = MinimumDate == DateTime.MinValue ? "/" : MinimumDate.Date.ToString("d");
-            var deadlineString = DeadlineDate == DateTime.MaxValue ? "/" : DeadlineDate.Date.ToString("d");
-            var maxDays = MaximumWorkingDays == int.MaxValue ? "/" : MaximumWorkingDays.ToString();
-
-            //add values to grid
-            destinationGrid.Rows.Add(CourseCode, TeacherCode, LectureSize, MinimumWorkingDays, StudentSize, minimumDateString, deadlineString, maxDays, IsPcNeeded,HoursPerDay);
+            return EntityDataBase.Courses.FirstOrDefault(c => c.CourseCode == courseCode);
         }
+
+        //get from database - DataGridView
+        public static Course FromDatabase(DataGridView datagridView, int i)
+        {
+            //new curriculum with code
+            string courseCode = datagridView[0, i].CellValue();
+            Course course = FromDatabase(courseCode);
+            return course;
+        }
+
+        //get from database - listbox
+        public static Course FromDatabase(ListBox listbox)
+        {
+            if (listbox.SelectedItem != null)
+            {
+                var courseCode = listbox.SelectedItem.ToString();
+                return Course.FromDatabase(courseCode);
+            }
+            return null;
+        }
+
+        //database - chech duplicates
+        public static void CheckDuplicatesInDatabase(DataGridView dataGridView, int rowIndex, string revertName)
+        {
+            string courseNameAfterUpdate = dataGridView[0, rowIndex].CellValue();
+            for (int i = 0; i < dataGridView.RowCount; i++)
+            {
+                if (dataGridView[0, i].CellValue() == courseNameAfterUpdate && i != rowIndex)
+                {
+                    EditorUtilities.ShowWarning(
+                        "Warning: Duplicate course names not allowed, reverting back to previous name");
+                    dataGridView[0, rowIndex].Value = revertName;
+                }
+            }
+        }
+
+
+
+        //*****************************************
+        // PARSER
+        //*****************************************
 
         public override void ParseCtt(string line)
         {
@@ -133,6 +169,22 @@ namespace cttEditor
             return dateTime;
         }
 
+        private int ParseMaximumValue(string intString)
+        {
+            int value = int.MaxValue;
+            if (!intString.Equals("/"))
+            {
+                value = int.Parse(intString);
+            }
+            return value;
+        }
+
+
+
+        //*****************************************
+        // HELPERS
+        //*****************************************
+
         private string cleanDateFormat(string datestring)
         {
             string missingDayZero = @"^([1-9])[\/](0?[1-9]|1[012])[\/\-]\d{4}$";
@@ -149,16 +201,6 @@ namespace cttEditor
             return datestring;
         }
 
-        private int ParseMaximumValue(string intString)
-        {
-            int value = int.MaxValue;
-            if (!intString.Equals("/"))
-            {
-                value = int.Parse(intString);
-            }
-            return value;
-        }
-
         public bool IsValid()
         {
             if (CourseCode != null &&
@@ -170,6 +212,27 @@ namespace cttEditor
             return false;
         }
 
+
+
+        //*****************************************
+        // UI
+        //*****************************************
+        public void AddToDataGrid(DataGridView destinationGrid)
+        {
+            //convert minmium and maximum values to /
+            var minimumDateString = MinimumDate == DateTime.MinValue ? "/" : MinimumDate.Date.ToString("d");
+            var deadlineString = DeadlineDate == DateTime.MaxValue ? "/" : DeadlineDate.Date.ToString("d");
+            var maxDays = MaximumWorkingDays == int.MaxValue ? "/" : MaximumWorkingDays.ToString();
+
+            //add values to grid
+            destinationGrid.Rows.Add(CourseCode, TeacherCode, LectureSize, MinimumWorkingDays, StudentSize, minimumDateString, deadlineString, maxDays, IsPcNeeded, HoursPerDay);
+        }
+
+
+
+        //*****************************************
+        // COMPARE
+        //*****************************************
 
         // compare based on courseName (for hashset and lists)
         public override bool Equals(object obj)

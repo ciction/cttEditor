@@ -31,6 +31,16 @@ namespace cttEditor
             //temp comment
         }
 
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+
+        //*************************************************
+        // PARSING
+        //*************************************************
+
         /// <summary>
         /// Parse input file
         /// </summary>
@@ -147,7 +157,7 @@ namespace cttEditor
                                     curriculum.AddToDataGrid(CurriculaDataGridView);
                                 CourseListBox.Items.Clear();
                                 CourseListBox.Items.Add(EntityDataBase.Curricula[0].CourseCount);
-                                UpdateCurriculumCoursesUI();
+                                UpdateCurriculumCoursesUi();
                                 break;
                             case "UNAVAILABILITY_COURSE:":
                                 break;
@@ -175,50 +185,96 @@ namespace cttEditor
             }
         }
 
+        //Parse DataBlock
+        private void ParseDataBlock(int firstLine, int count, string file, AddPlanningEntityDelegate addPlanningEntity)
+        {
+            var lines = File.ReadLines(file).Skip(firstLine).Take(count).ToList();
+            foreach (var line in lines)
+                addPlanningEntity(line);
+        }
 
+        //Parse DataBlock - addPlanningEntity Course
+        private void AddCourse(string line)
+        {
+            var newCourse = new Course();
+            newCourse.ParseCtt(line);
+            EntityDataBase.Courses.Add(newCourse);
+        }
+
+        //Parse DataBlock - addPlanningEntity Room
+        private void AddRoom(string line)
+        {
+            var newRoom = new Room();
+            newRoom.ParseCtt(line);
+            EntityDataBase.Rooms.Add(newRoom);
+        }
+
+        //Parse DataBlock - addPlanningEntity Curriculum
+        private void AddCurriculum(string line)
+        {
+            var newCurriculum = new Curriculum();
+            newCurriculum.ParseCtt(line);
+            EntityDataBase.Curricula.Add(newCurriculum);
+        }
+
+
+
+        //*************************************************
+        // UPDATING HEADER FIELDS
+        //*************************************************
 
         /// <summary>
-        /// Course grid
-        /// when a row gets deleted: remove that course from existing curricula
-        /// update the UI 
+        /// Change Scehdule title
         /// </summary>
-        private void CoursesdataGridView_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+        private void CttNameValue_TextChanged(object sender, EventArgs e)
         {
-            int rowIndex = e.Row.Index;
-            if (rowIndex < 0)
-                return;
-            var cells = CoursesdataGridView.Rows[rowIndex].Cells;
-
-            var courseToDelete = new Course();
-            courseToDelete.CourseCode = CoursesdataGridView[0, rowIndex].Value.ToString();
-            if (EntityDataBase.Courses.Contains(courseToDelete))
-            {
-                EntityDataBase.Courses.Remove(courseToDelete);
-                foreach (var curriculum in EntityDataBase.Curricula)
-                {
-                    curriculum.Courses.Remove(courseToDelete);
-                }
-            }
-            else
-            {
-                EditorUtilities.ShowError(string.Format("Course <{0}> does not exist", courseToDelete.CourseCode));
-                throw new Exception(string.Format("Course <{0}> does not exist", courseToDelete.CourseCode));
-            }
-
-
-          
-            //update UI
-            UpdateCurriculumCoursesUI();
-            //todo update course count in curriculum gird
-            //todo fix error on the list of avalable courses after a delete
+            _headerData.PlanningName = CttNameValue.Text;
         }
 
-        //Rooms grid label
-
-        private void RoomsdataGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        /// <summary>
+        /// Change Scehdule DayCount
+        /// </summary>
+        private void CttDaysValue_TextChanged(object sender, EventArgs e)
         {
-            RoomsCountLabel.Text = RoomsdataGridView.RowCount.ToString();
+            _headerData.DaysCount = int.Parse(CttDaysValue.Text);
         }
+
+        private void CttPeriodsValue_TextChanged(object sender, EventArgs e)
+        {
+            _headerData.PeriodsPerDay = int.Parse(CttPeriodsValue.Text);
+        }
+
+        /// <summary>
+        /// Change language
+        /// </summary>
+        private void comboBoxLanguage_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Get the currently selected item in the ListBox.
+            string selectedLanguage = comboBoxLanguage.SelectedItem.ToString();
+
+            if (selectedLanguage == "Nederlands")
+            {
+                _headerData.SetLanguage("NL");
+            }
+            else if (selectedLanguage == "English")
+            {
+                _headerData.SetLanguage("ENG");
+            }
+        }
+
+        /// <summary>
+        /// Change startDate
+        /// </summary>
+        private void startDateTimePicker_ValueChanged(object sender, EventArgs e)
+        {
+            _headerData.StartDate = startDateTimePicker.Value;
+        }
+
+
+
+        //*************************************************
+        // COURSES:     GRID
+        //*************************************************
 
         /// <summary>
         /// editing courses, save old course name before each update
@@ -235,6 +291,7 @@ namespace cttEditor
         /// when changing the courses in te grid
         ///  - update the course count
         ///  - update the courses list for curricula
+        ///  - only save the lines to the database when they contain a valid course
         /// </summary>
         private void CoursesdataGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
         {
@@ -248,20 +305,9 @@ namespace cttEditor
             if (rowIndex < 0)
                 return;
 
-
-
-
             //revert course name if it already existed
-            string courseNameAfterUpdate = CoursesdataGridView[0, rowIndex].CellValue();
-            for (int i = 0; i < CoursesdataGridView.RowCount; i++)
-            {
-                if (CoursesdataGridView[0, i].CellValue() == courseNameAfterUpdate && i != rowIndex)
-                {
-                    //todo show error message
-                    //                    throw new Exception("Error: Duplicate course name");
-                    CoursesdataGridView[0, rowIndex].Value = _courseNameBeforeUpdate;
-                }
-            }
+            Course.CheckDuplicatesInDatabase(CoursesdataGridView,rowIndex,_courseNameBeforeUpdate);
+           
 
 
             var cellValue = CoursesdataGridView[e.ColumnIndex, rowIndex].Value;
@@ -324,7 +370,7 @@ namespace cttEditor
                     curriculum.Courses.Add(newCourse);
                 }
                         //Update the available courses for curricula (UI)
-                        UpdateCurriculumCoursesUI();
+                        UpdateCurriculumCoursesUi();
                 }
             
             //todo prevent adding the same course twice
@@ -334,81 +380,72 @@ namespace cttEditor
 
         }
 
-
-
-
-        //Parse DataBlock
-        private void ParseDataBlock(int firstLine, int count, string file, AddPlanningEntityDelegate addPlanningEntity)
-        {
-            var lines = File.ReadLines(file).Skip(firstLine).Take(count).ToList();
-            foreach (var line in lines)
-                addPlanningEntity(line);
-        }
-
-        //addPlanningEntity Course
-        private void AddCourse(string line)
-        {
-            var newCourse = new Course();
-            newCourse.ParseCtt(line);
-            EntityDataBase.Courses.Add(newCourse);
-        }
-
-        //addPlanningEntity Room
-        private void AddRoom(string line)
-        {
-            var newRoom = new Room();
-            newRoom.ParseCtt(line);
-            EntityDataBase.Rooms.Add(newRoom);
-        }
-
-        //addPlanningEntity Curriculum
-        private void AddCurriculum(string line)
-        {
-            var newCurriculum = new Curriculum();
-            newCurriculum.ParseCtt(line);
-            EntityDataBase.Curricula.Add(newCurriculum);
-        }
-
-
         /// <summary>
-        ///     Parse datablock partially to a datagrid
+        /// Course grid
+        /// when a row gets deleted: remove that course from existing curricula
+        /// update the UI 
         /// </summary>
-        /// <param name="lineItems">only take first n parameters per line</param>
-        private void ParseBlockToDatagrid(int firstLine, int count, string file, DataGridView destinationGrid,
-            int lineItems)
+        private void CoursesdataGridView_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
         {
-            var lines = File.ReadLines(file).Skip(firstLine).Take(count).ToList();
-            var simplifiedLine = "";
-            foreach (var line in lines) 
+            int rowIndex = e.Row.Index;
+            if (rowIndex < 0)
+                return;
+
+           var courseToDelete = Course.FromDatabase(CoursesdataGridView, rowIndex);
+            if (EntityDataBase.Courses.Contains(courseToDelete))
             {
-//                simplifiedLine = HelperMethods.SimplifyWhiteSpaces(line);
-                var words = simplifiedLine.Split(new[] {" ", "\t"}, StringSplitOptions.None);
-                var firstWords = words.Take(lineItems).ToArray();
-                destinationGrid.Rows.Add(firstWords);
+                EntityDataBase.Courses.Remove(courseToDelete);
+                foreach (var curriculum in EntityDataBase.Curricula)
+                {
+                    curriculum.Courses.Remove(courseToDelete);
+                }
             }
+            else
+            {
+                EditorUtilities.ShowError(string.Format("Course <{0}> does not exist", courseToDelete.CourseCode));
+                throw new Exception(string.Format("Course <{0}> does not exist", courseToDelete.CourseCode));
+            }
+
+
+
+            //update UI
+            UpdateCurriculumCoursesUi();
+            //todo update course count in curriculum gird
+            //todo fix error on the list of avalable courses after a delete
         }
 
+
+
+        //*************************************************
+        // CURRICULA:     GRID
+        //*************************************************
+
+        //UpdateCurriculumCoursesUi on selection changed
         private void CurriculaDataGridViewSelectionChanged(object sender, EventArgs e)
         {
-            UpdateCurriculumCoursesUI();
+            UpdateCurriculumCoursesUi();
         }
 
         /// <summary>
-        /// UI: - Update the list of inactive courses for the current curriculum    (InactiveCoursesBox)
-        ///     - Update the list of active courses for the current curriculum      (CourseListBox)
+        /// UI: - Update course count for all curricula
+        ///     - Update the inactive courses list (InactiveCoursesBox)
+        ///     - Update the active courses list   (CourseListBox)
         /// </summary>
-        public void UpdateCurriculumCoursesUI()
+        public void UpdateCurriculumCoursesUi()
         {
             CourseListBox.Items.Clear();
             InactiveCoursesBox.Items.Clear();
-            var selectedCurriculum = GetSelectedCuriculum();
 
+            for (int i = 0; i < CurriculaDataGridView.RowCount-1; i++)
+            {
+                Curriculum tempCurriculum;
+                if ((tempCurriculum = Curriculum.FromDatabase(CurriculaDataGridView, i)) != null)
+                    CurriculaDataGridView["CurriculumGrid_CourseCount", i].Value = tempCurriculum.CourseCount;
+            }
+
+            var selectedCurriculum = Curriculum.FromDatabase(CurriculaDataGridView);
             if (selectedCurriculum != null)
             {
-                //Update UI  Curricula DataGridView coursecount
-                var selectedRow = CurriculaDataGridView.CurrentCell.RowIndex;
-                CurriculaDataGridView["CurriculumGrid_CourseCount", selectedRow].Value = selectedCurriculum.CourseCount;
-
                 //Update UI Active course listbox
                 foreach (var course in selectedCurriculum.Courses)
                     CourseListBox.Items.Add(course.CourseCode);
@@ -425,38 +462,21 @@ namespace cttEditor
             }
         }
 
+        /// <summary>
+        /// Add course to curriculum
+        /// </summary>
         private void AddCourseButton_Click(object sender, EventArgs e)
         {
-            if (InactiveCoursesBox.SelectedItem != null)
-            {
-                var selectedCourse = GetSelectedInactiveCurriculumCourse();
-                var selectedCurriculum = GetSelectedCuriculum();
+            if (InactiveCoursesBox.SelectedItem == null) return;
+            var selectedCourse = Course.FromDatabase(InactiveCoursesBox);
 
-                try
-                {
-                    selectedCurriculum.AddCourse(selectedCourse);
-                    UpdateCurriculumCoursesUI();
-                }
-                catch (Exception exception)
-                {
-                    Console.WriteLine(exception);
-                }
-            }
-        }
 
-        private void RemoveCourseButton_Click(object sender, EventArgs e)
-        {
-            var selectedCourse = GetSelectedActiveCurriculumCourse();
-            if (selectedCourse == null)
-                return;
-
-            var selectedCurriculum = GetSelectedCuriculum();
-
+            var selectedCurriculum = Curriculum.FromDatabase(CurriculaDataGridView);
 
             try
             {
-                selectedCurriculum.RemoveCourse(selectedCourse);
-                UpdateCurriculumCoursesUI();
+                selectedCurriculum.AddCourse(selectedCourse);
+                UpdateCurriculumCoursesUi();
             }
             catch (Exception exception)
             {
@@ -464,119 +484,44 @@ namespace cttEditor
             }
         }
 
-        private Course GetSelectedInactiveCurriculumCourse()
-        {
-            if (InactiveCoursesBox.SelectedItem != null)
-            {
-                var courseCode = InactiveCoursesBox.SelectedItem.ToString();
-
-                //find Course by 
-                  return EntityDataBase.Courses.FirstOrDefault(c => c.CourseCode == courseCode);
-            }
-            return null;
-        }
-
-        private Course GetSelectedActiveCurriculumCourse()
-        {
-            if (CourseListBox.SelectedItem != null)
-            {
-                var courseCode = CourseListBox.SelectedItem.ToString();
-                return EntityDataBase.Courses.FirstOrDefault(c => c.CourseCode == courseCode);
-            }
-            return null;
-        }
         /// <summary>
-        /// Get the selected curriculum from the database, based on what is selected in the CurriculaDataGridView
+        /// Remove course from curriculum
         /// </summary>
-        private Curriculum GetSelectedCuriculum()
+        private void RemoveCourseButton_Click(object sender, EventArgs e)
         {
-            if (CurriculaDataGridView.CurrentCell == null)
-                return null;
+            var selectedCourse = Course.FromDatabase(CourseListBox);
 
-            var selectedRow = CurriculaDataGridView.CurrentCell.RowIndex;
-            if (selectedRow < EntityDataBase.Curricula.Count)
+
+            if (selectedCourse == null)
+                return;
+            var selectedCurriculum = Curriculum.FromDatabase(CurriculaDataGridView);
+
+            try
             {
-                //                return EntityDataBase.Curricula[selectedRow];
-                var selectedCurriculumCode  = CurriculaDataGridView[0, selectedRow].CellValue();
-                return EntityDataBase.Curricula.Find(curriculum => curriculum.CurriculumCode == selectedCurriculumCode);
+                selectedCurriculum.RemoveCourse(selectedCourse);
+                UpdateCurriculumCoursesUi();
             }
-            return null;
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+            }
         }
 
-        private Course GetSelectedCourse()
-        {
-            var rowIndex = CoursesdataGridView.CurrentCell.RowIndex;
-            var selectedCourseCode = CoursesdataGridView[0, rowIndex].CellValue();
-            return EntityDataBase.Courses.Find(course => course.CourseCode == selectedCourseCode);
-        }
 
+
+      
         //delegates
         private delegate void AddPlanningEntityDelegate(string line);
 
-        
-
-        private void Form1_Load(object sender, EventArgs e)
-        {
-
-        }
-
-    
-
-        private void exitButton_Click(object sender, EventArgs e)
-        {
-            this.Close();
-        }
-
-        private void saveButton_Click(object sender, EventArgs e)
-        {
-            //todo do save logic
-
-            this.Close();
-        }
-
-        /// <summary>
-        /// Change Scehdule title
-        /// </summary>
-        private void CttNameValue_TextChanged(object sender, EventArgs e)
-        {
-            _headerData.PlanningName = CttNameValue.Text;
-        }
-
-        /// <summary>
-        /// Change Scehdule DayCount
-        /// </summary>
-        private void CttDaysValue_TextChanged(object sender, EventArgs e)
-        {
-            _headerData.DaysCount = int.Parse(CttDaysValue.Text);
-        }
-
-        /// <summary>
-        /// Change language
-        /// </summary>
-        private void comboBoxLanguage_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            // Get the currently selected item in the ListBox.
-            string selectedLanguage = comboBoxLanguage.SelectedItem.ToString();
-
-            if (selectedLanguage == "Nederlands")
-            {
-                _headerData.SetLanguage("NL");
-            }
-            else if (selectedLanguage == "English")
-            {
-                _headerData.SetLanguage("ENG");
-            }
-        }
-
-        /// <summary>
-        /// Change startDate
-        /// </summary>
-        private void startDateTimePicker_ValueChanged(object sender, EventArgs e)
-        {
-            _headerData.StartDate = startDateTimePicker.Value;
-        }
 
 
+
+
+
+
+        //*************************************************
+        // COPY PASTE EXCEL
+        //*************************************************
         private void pasteExcelCourse_Click(object sender, EventArgs e)
         {
             PasteFromExcel(CoursesdataGridView);
@@ -619,5 +564,20 @@ namespace cttEditor
 
         }
 
+
+        //*************************************************
+        // SAVE / EXIT
+        //*************************************************
+        private void exitButton_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void saveButton_Click(object sender, EventArgs e)
+        {
+            //todo do save logic
+
+            this.Close();
+        }
     }
 }
