@@ -51,6 +51,22 @@ namespace cttEditor
             MessageBox.Show(message, @"Warning", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
 
+        public static string CleanDateFormat(string datestring)
+        {
+            string missingDayZero = @"^([1-9])[\/](0?[1-9]|1[012])[\/\-]\d{4}$";
+            if (Regex.IsMatch(datestring, missingDayZero))
+            {
+                datestring = "0" + datestring;
+            }
+
+            string missingMonthZero = @"^(0?[1-9]|[12][0-9]|3[01])[\/]([1-9])[\/\-]\d{4}$";
+            if (Regex.IsMatch(datestring, missingMonthZero))
+            {
+                datestring = datestring.Insert(3, "0");
+            }
+            return datestring;
+        }
+
 
     }
 }

@@ -12,14 +12,20 @@ namespace cttEditor
 {
     public partial class Form1 : Form
     {
+        //members
         private readonly HeaderData _headerData = new HeaderData();
         private string _courseNameBeforeUpdate = "";
-
+        private string _roomNameBeforeUpdate = "";
+        private string _curriculumNameBeforeUpdate = "";
+        private string _unavailabilityCourseConstraintNameBeforeUpdate = "";
+        
+        //delegate members
+        private delegate void AddPlanningEntityDelegate(string line);
 
         public Form1()
         {
             InitializeComponent();
-
+            
             //Console.WriteLine(Directory.GetCurrentDirectory());
             //ReadCtt(@"C:\Users\Christophe\Documents\programming\bachelorproef\ctt_editor\cttEditor\cttEditor\digx_opgesplitst.ctt");
             ReadCtt(@"digx_opgesplitst.ctt");
@@ -160,6 +166,9 @@ namespace cttEditor
                                 UpdateCurriculumCoursesUi();
                                 break;
                             case "UNAVAILABILITY_COURSE:":
+                                ParseDataBlock(linenumber + 1, _headerData.CurriculaCount, file, AddunavailabilityCourse);
+                                foreach (var unavailabilityCourse in EntityDataBase.Unavailability_CourseConstraints)
+                                        unavailabilityCourse.AddToDataGrid(ConstraintsDataGridView);
                                 break;
                             case "UNAVAILABILITY_CURRICULUM:":
                                 break;
@@ -215,6 +224,14 @@ namespace cttEditor
             var newCurriculum = new Curriculum();
             newCurriculum.ParseCtt(line);
             EntityDataBase.Curricula.Add(newCurriculum);
+        }
+
+        //Parse DataBlock - UNAVAILABILITY_COURSE
+        private void AddunavailabilityCourse(string line)
+        {
+            var newUnavailabilityCourse = new Unavailability_Course();
+            newUnavailabilityCourse.ParseCtt(line);
+            EntityDataBase.Unavailability_CourseConstraints.Add(newUnavailabilityCourse);
         }
 
 
@@ -300,13 +317,11 @@ namespace cttEditor
             var dateColumns = new List<int> { 5, 6 };
             int rowIndex = e.RowIndex;
 
-
-            //dataGridViewCellEventArgs
             if (rowIndex < 0)
                 return;
 
             //revert course name if it already existed
-            Course.CheckDuplicatesInDatabase(CoursesdataGridView,rowIndex,_courseNameBeforeUpdate);
+            PlanningEntity.CheckDuplicatesInGrid(CoursesdataGridView,rowIndex,_courseNameBeforeUpdate);
            
 
 
@@ -354,30 +369,28 @@ namespace cttEditor
             }
 
             //after checks
-            var oldCourse = new Course();
-            oldCourse.CourseCode = _courseNameBeforeUpdate;
+            var oldCourse = Course.FromDatabase(_courseNameBeforeUpdate);
             var newCourse = new Course();
-            newCourse.ParseGridLine(CoursesdataGridView, rowIndex);
+            newCourse.FillDataFromGridline(CoursesdataGridView, rowIndex);
             
             if (newCourse.IsValid())
                 {
                     EntityDataBase.Courses.Remove(oldCourse);
                     EntityDataBase.Courses.Add(newCourse);
 
+                   
+
                 foreach (var curriculum in EntityDataBase.Curricula)
                 {
                     curriculum.Courses.Remove(oldCourse);
                     curriculum.Courses.Add(newCourse);
                 }
-                        //Update the available courses for curricula (UI)
-                        UpdateCurriculumCoursesUi();
+                //Update UI
+                _headerData.CourseCount = EntityDataBase.Courses.Count;
+                CoursesCountLabel.Text = _headerData.CourseCount.ToString();
+                UpdateCurriculumCoursesUi();
                 }
             
-            //todo prevent adding the same course twice
-
-            //todo update other grids (WIP)
-
-
         }
 
         /// <summary>
@@ -395,6 +408,9 @@ namespace cttEditor
             if (EntityDataBase.Courses.Contains(courseToDelete))
             {
                 EntityDataBase.Courses.Remove(courseToDelete);
+                _headerData.CourseCount = EntityDataBase.Courses.Count;
+                CoursesCountLabel.Text = _headerData.CourseCount.ToString();
+
                 foreach (var curriculum in EntityDataBase.Curricula)
                 {
                     curriculum.Courses.Remove(courseToDelete);
@@ -405,13 +421,8 @@ namespace cttEditor
                 EditorUtilities.ShowError(string.Format("Course <{0}> does not exist", courseToDelete.CourseCode));
                 throw new Exception(string.Format("Course <{0}> does not exist", courseToDelete.CourseCode));
             }
-
-
-
             //update UI
             UpdateCurriculumCoursesUi();
-            //todo update course count in curriculum gird
-            //todo fix error on the list of avalable courses after a delete
         }
 
 
@@ -420,8 +431,89 @@ namespace cttEditor
         // CURRICULA:     GRID
         //*************************************************
 
+
+        /// <summary>
+        /// editing curriculum, save old name before each update
+        /// </summary>
+        private void CurriculaDataGridView_CellValidating(object sender,
+            DataGridViewCellValidatingEventArgs e)
+        {
+            _curriculumNameBeforeUpdate = CurriculaDataGridView[0, e.RowIndex].CellValue();
+        }
+
+        /// <summary>
+        /// editing curriculum
+        /// </summary>
+        private void CurriculaDataGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            var numericColumns = new List<int> { 1 };
+            int rowIndex = e.RowIndex;
+            if (rowIndex < 0)
+                return;
+
+            var dataGridView = CurriculaDataGridView;
+
+            //revert course name if it already existed
+            PlanningEntity.CheckDuplicatesInGrid(dataGridView, rowIndex, _curriculumNameBeforeUpdate);
+
+            //check null fields
+            if (dataGridView[0, rowIndex].Value == null)
+                return;
+
+
+
+            //after checks
+//            var oldCurriculum = Curriculum.FromDatabase(_curriculumNameBeforeUpdate);
+            var newCurriculum = new Curriculum();
+            newCurriculum.FillDataFromGridline(dataGridView, rowIndex);
+
+            if (newCurriculum.IsValid())
+            {
+//                EntityDataBase.Curricula.Remove(oldCurriculum);
+
+                if (Curriculum.FromDatabase(newCurriculum.CurriculumCode) == null)
+                     EntityDataBase.Curricula.Add(newCurriculum);
+
+                _headerData.CurriculaCount = EntityDataBase.Curricula.Count;
+                CurriculaCountLabel.Text = _headerData.CurriculaCount.ToString();
+            }
+
+     
+
+        }
+
+        /// <summary>
+        /// delete curriculum row
+        /// </summary>
+        /// </summary>
+        private void CurriculaDataGridView_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+        {
+            int rowIndex = e.Row.Index;
+            if (rowIndex < 0)
+                return;
+            DataGridView dataGridView = CurriculaDataGridView;
+
+            var curriculumToDelete = Curriculum.FromDatabase(dataGridView, rowIndex);
+            if (EntityDataBase.Curricula.Contains(curriculumToDelete))
+            {
+                EntityDataBase.Curricula.Remove(curriculumToDelete);
+                _headerData.CurriculaCount = EntityDataBase.Curricula.Count;
+                CurriculaCountLabel.Text = _headerData.CurriculaCount.ToString();
+            }
+            else
+            {
+                EditorUtilities.ShowError(string.Format("Curriculum <{0}> does not exist", curriculumToDelete.CurriculumCode));
+                throw new Exception(string.Format("Curriculum <{0}> does not exist", curriculumToDelete.CurriculumCode));
+            }
+            //update UI
+            UpdateCurriculumCoursesUi();
+        }
+
+
+
+
         //UpdateCurriculumCoursesUi on selection changed
-        private void CurriculaDataGridViewSelectionChanged(object sender, EventArgs e)
+        private void CurriculaDataGridView_SelectionChanged(object sender, EventArgs e)
         {
             UpdateCurriculumCoursesUi();
         }
@@ -462,17 +554,14 @@ namespace cttEditor
             }
         }
 
-        /// <summary>
         /// Add course to curriculum
         /// </summary>
         private void AddCourseButton_Click(object sender, EventArgs e)
         {
-            if (InactiveCoursesBox.SelectedItem == null) return;
             var selectedCourse = Course.FromDatabase(InactiveCoursesBox);
-
+            if (selectedCourse == null) return;
 
             var selectedCurriculum = Curriculum.FromDatabase(CurriculaDataGridView);
-
             try
             {
                 selectedCurriculum.AddCourse(selectedCourse);
@@ -490,12 +579,9 @@ namespace cttEditor
         private void RemoveCourseButton_Click(object sender, EventArgs e)
         {
             var selectedCourse = Course.FromDatabase(CourseListBox);
+            if (selectedCourse == null) return;
 
-
-            if (selectedCourse == null)
-                return;
             var selectedCurriculum = Curriculum.FromDatabase(CurriculaDataGridView);
-
             try
             {
                 selectedCurriculum.RemoveCourse(selectedCourse);
@@ -509,14 +595,140 @@ namespace cttEditor
 
 
 
-      
-        //delegates
-        private delegate void AddPlanningEntityDelegate(string line);
+        //*************************************************
+        // ROOMS:     GRID
+        //*************************************************
+
+        /// <summary>
+        /// editing room, save old room name before each update
+        /// </summary>
+        private void RoomsdataGridView_CellValidating(object sender,
+            DataGridViewCellValidatingEventArgs e)
+        {
+            _roomNameBeforeUpdate = RoomsdataGridView[0, e.RowIndex].CellValue();
+        }
+
+        /// <summary>
+        /// editing room
+        /// </summary>
+        private void RoomsdataGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            int rowIndex = e.RowIndex;
+            if (rowIndex < 0)
+                return;
+
+            //revert course name if it already existed
+            Room.CheckDuplicatesInDatabase(RoomsdataGridView, rowIndex, _roomNameBeforeUpdate);
+
+            //check if name is not null
+            if (RoomsdataGridView[0, rowIndex].Value == null)
+                return;
+            if (RoomsdataGridView[1, rowIndex].Value == null)
+                RoomsdataGridView[1, rowIndex].Value = 1;
+
+            //after checks
+            var oldRoom = Room.FromDatabase(_roomNameBeforeUpdate);
+            var newRoom = new Room();
+            newRoom.FillDataFromGridline(RoomsdataGridView, rowIndex);
+
+
+            if (newRoom.IsValid())
+            {
+                EntityDataBase.Rooms.Remove(oldRoom);
+                if (Room.FromDatabase(newRoom.RoomName) == null)
+                    EntityDataBase.Rooms.Add(newRoom);
+
+
+                _headerData.RoomCount = EntityDataBase.Rooms.Count;
+                RoomsCountLabel.Text = _headerData.RoomCount.ToString();
+            }
+
+        }
+
+
+        /// <summary>
+        /// delete room row
+        /// </summary>
+        /// </summary>
+        private void RoomsdataGridView_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+        {
+            int rowIndex = e.Row.Index;
+            if (rowIndex < 0)
+                return;
+            DataGridView dataGridView = RoomsdataGridView;
+
+            var roomToDelete = Room.FromDatabase(dataGridView, rowIndex);
+            if (EntityDataBase.Rooms.Contains(roomToDelete))
+            {
+                EntityDataBase.Rooms.Remove(roomToDelete);
+                _headerData.RoomCount = EntityDataBase.Rooms.Count;
+                RoomsCountLabel.Text = _headerData.RoomCount.ToString();
+            }
+            else
+            {
+                EditorUtilities.ShowError(string.Format("Room <{0}> does not exist", roomToDelete.RoomName));
+                throw new Exception(string.Format("Room <{0}> does not exist", roomToDelete.RoomName));
+            }
+            //update UI
+            UpdateCurriculumCoursesUi();
+        }
+
+
+        //*************************************************
+        // UNAVAILABILITY_COURSE:     GRID
+        //*************************************************
+        private void ConstraintsDataGridView_CellValidating(object sender,
+            DataGridViewCellValidatingEventArgs e)
+        {
+            _unavailabilityCourseConstraintNameBeforeUpdate = ConstraintsDataGridView[0, e.RowIndex].CellValue();
+        }
+
+        /// <summary>
+        /// editing room
+        /// </summary>
+        private void ConstraintsDataGridView_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            int rowIndex = e.RowIndex;
+            if (rowIndex < 0)
+                return;
+
+            DataGridView dataGridView = ConstraintsDataGridView;
+
+            //revert course name if it already existed
+            Unavailability_Course.CheckDuplicatesInGrid(dataGridView, rowIndex, _unavailabilityCourseConstraintNameBeforeUpdate,3,
+                "Warning: Duplicate Unavailability_Courses not allowed, reverting back to previous state");
+
+            //check if name is not null
+            if (dataGridView[0, rowIndex].Value == null)
+                return;
+            if (dataGridView[1, rowIndex].Value == null)
+                dataGridView[1, rowIndex].Value = 1;
 
 
 
 
+            //todo WIP ----------------------------
+            var oldCourse = Course.FromDatabase(_courseNameBeforeUpdate);
 
+
+            //after checks
+            var oldRoom = Room.FromDatabase(_roomNameBeforeUpdate);
+            var newRoom = new Room();
+            newRoom.FillDataFromGridline(dataGridView, rowIndex);
+
+
+            if (newRoom.IsValid())
+            {
+                EntityDataBase.Rooms.Remove(oldRoom);
+                if (Room.FromDatabase(newRoom.RoomName) == null)
+                    EntityDataBase.Rooms.Add(newRoom);
+
+
+                _headerData.RoomCount = EntityDataBase.Rooms.Count;
+                RoomsCountLabel.Text = _headerData.RoomCount.ToString();
+            }
+
+        }
 
 
         //*************************************************

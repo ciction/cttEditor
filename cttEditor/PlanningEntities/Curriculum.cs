@@ -43,6 +43,8 @@ namespace cttEditor.PlanningEntities
                 return curriculum;
         }
 
+       
+
         private void InitCoursesListener()
         {
             Courses.OnRemove += (sender, args) =>
@@ -77,6 +79,20 @@ namespace cttEditor.PlanningEntities
             }
         }
 
+        public override void FillDataFromGridline(DataGridView dataGridView, int rowIndex)
+        {
+            var i = 0;
+            CurriculumCode = dataGridView[i++, rowIndex].CellValue();
+        }
+
+        public override bool IsValid()
+        {
+            if (!string.IsNullOrWhiteSpace(CurriculumCode) &&
+                CourseCount == 0)
+            return true;
+            return false;
+        }
+
         public void AddToDataGrid(DataGridView destinationGrid)
         {
             destinationGrid.Rows.Add(CurriculumCode, CourseCount);
@@ -88,14 +104,12 @@ namespace cttEditor.PlanningEntities
                 return false;
 
             Courses.Add(course);
-//            ++CourseCount;
             return true;
         }
 
         public bool RemoveCourse(Course course)
         {
             Courses.Remove(course);
-//            --CourseCount;
             return true;
         }
 

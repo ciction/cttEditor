@@ -8,7 +8,7 @@ namespace cttEditor.PlanningEntities
 {
     public class Course : PlanningEntity
     {
-        public enum DateType{Maximum,Minium};
+
 
         public string CourseCode { get; set; }
         public string TeacherCode { get; set; }
@@ -70,20 +70,21 @@ namespace cttEditor.PlanningEntities
             return null;
         }
 
-        //database - chech duplicates
-        public static void CheckDuplicatesInDatabase(DataGridView dataGridView, int rowIndex, string revertName)
-        {
-            string courseNameAfterUpdate = dataGridView[0, rowIndex].CellValue();
-            for (int i = 0; i < dataGridView.RowCount; i++)
-            {
-                if (dataGridView[0, i].CellValue() == courseNameAfterUpdate && i != rowIndex)
-                {
-                    EditorUtilities.ShowWarning(
-                        "Warning: Duplicate course names not allowed, reverting back to previous name");
-                    dataGridView[0, rowIndex].Value = revertName;
-                }
-            }
-        }
+        //database - chech duplicates moved to super
+//        public static void CheckDuplicatesInGrid(DataGridView dataGridView, int rowIndex, string revertName)
+//        {
+//            if (rowIndex < 0) return;
+//            string courseNameAfterUpdate = dataGridView[0, rowIndex].CellValue();
+//            for (int i = 0; i < dataGridView.RowCount; i++)
+//            {
+//                if (dataGridView[0, i].CellValue() == courseNameAfterUpdate && i != rowIndex)
+//                {
+//                    EditorUtilities.ShowWarning(
+//                        "Warning: Duplicate course names not allowed, reverting back to previous name");
+//                    dataGridView[0, rowIndex].Value = revertName;
+//                }
+//            }
+//        }
 
 
 
@@ -119,7 +120,7 @@ namespace cttEditor.PlanningEntities
             }
         }
 
-        public void ParseGridLine(DataGridView dataGridView, int rowIndex)
+        public override void FillDataFromGridline(DataGridView dataGridView, int rowIndex)
         {
             var i = 0;
             CourseCode = dataGridView[i++, rowIndex].CellValue();
@@ -149,27 +150,9 @@ namespace cttEditor.PlanningEntities
 
         }
 
-        private DateTime ParseDate(string dateString, DateType dateType)
-        {
-            DateTime dateTime = new DateTime();
+       
 
-            if (!dateString.Equals("/"))
-            {
-                dateString = cleanDateFormat(dateString);
-                dateTime = DateTime.ParseExact(dateString, "dd/MM/yyyy", CultureInfo.InvariantCulture);
-            }
-            else
-            {
-                //                set default value
-                if (dateType == DateType.Maximum)
-                {
-                    dateTime = DateTime.MaxValue;
-                }
-            }
-            return dateTime;
-        }
-
-        private int ParseMaximumValue(string intString)
+        private static int ParseMaximumValue(string intString)
         {
             int value = int.MaxValue;
             if (!intString.Equals("/"))
@@ -185,23 +168,9 @@ namespace cttEditor.PlanningEntities
         // HELPERS
         //*****************************************
 
-        private string cleanDateFormat(string datestring)
-        {
-            string missingDayZero = @"^([1-9])[\/](0?[1-9]|1[012])[\/\-]\d{4}$";
-            if (Regex.IsMatch(datestring, missingDayZero))
-            {
-                datestring = "0" + datestring;
-            }
+       
 
-            string missingMonthZero = @"^(0?[1-9]|[12][0-9]|3[01])[\/]([1-9])[\/\-]\d{4}$";
-            if (Regex.IsMatch(datestring, missingMonthZero))
-            {
-                datestring = datestring.Insert(3, "0");
-            }
-            return datestring;
-        }
-
-        public bool IsValid()
+        public override bool IsValid()
         {
             if (CourseCode != null &&
                 TeacherCode != null &&
