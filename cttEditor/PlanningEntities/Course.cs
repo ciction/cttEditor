@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using System.Windows.Forms;
+using cttEditor.PlanningEntities;
 
 namespace cttEditor
 {
@@ -44,7 +46,13 @@ namespace cttEditor
 
         public void AddToDataGrid(DataGridView destinationGrid)
         {
-            destinationGrid.Rows.Add(CourseCode, TeacherCode, LectureSize, MinimumWorkingDays, StudentSize);
+            //convert minmium and maximum values to /
+            var minimumDateString = MinimumDate == DateTime.MinValue ? "/" : MinimumDate.Date.ToString("d");
+            var deadlineString = DeadlineDate == DateTime.MaxValue ? "/" : DeadlineDate.Date.ToString("d");
+            var maxDays = MaximumWorkingDays == int.MaxValue ? "/" : MaximumWorkingDays.ToString();
+
+            //add values to grid
+            destinationGrid.Rows.Add(CourseCode, TeacherCode, LectureSize, MinimumWorkingDays, StudentSize, minimumDateString, deadlineString, maxDays, IsPcNeeded,HoursPerDay);
         }
 
         public override void ParseCtt(string line)
@@ -53,15 +61,9 @@ namespace cttEditor
 
             var i = 0;
             CourseCode = words[i++];
-            if (CourseCode.EndsWith("_WK"))
-            {
-                HoursPerDay = 3;
-            }
-            else
-            {
-                HoursPerDay = 2;
-            }
+            HoursPerDay = CourseCode.EndsWith("_WK") ? 3 : 2;
             TeacherCode = words[i++];
+            TeacherDatabase.TeacherCodes.Add(TeacherCode);
             LectureSize = int.Parse(words[i++]);
             MinimumWorkingDays = int.Parse(words[i++]);
             StudentSize = int.Parse(words[i++]);
@@ -73,13 +75,42 @@ namespace cttEditor
 
             if (words.Length >= 9)
             {
-            IsPcNeeded = bool.Parse(words[i++]);
-
+                IsPcNeeded = bool.Parse(words[i++]);
             }
             if (words.Length >= 10)
             {
                 HoursPerDay = int.Parse(words[i++]);
             }
+        }
+
+        public void ParseGridLine(DataGridView dataGridView, int rowIndex)
+        {
+            var i = 0;
+            CourseCode = dataGridView[i++, rowIndex].CellValue();
+            HoursPerDay = CourseCode.EndsWith("_WK") ? 3 : 2;
+            TeacherCode = dataGridView[i++, rowIndex].CellValue();
+            LectureSize = int.Parse(dataGridView[i++, rowIndex].CellValue());
+            MinimumWorkingDays = int.Parse(dataGridView[i++, rowIndex].CellValue());
+            StudentSize = int.Parse(dataGridView[i++, rowIndex].CellValue());
+
+            MinimumDate = ParseDate(dataGridView[i++, rowIndex].CellValue(),DateType.Minium);
+            DeadlineDate = ParseDate(dataGridView[i++, rowIndex].CellValue(),DateType.Maximum);
+
+            MaximumWorkingDays = ParseMaximumValue(dataGridView[i++, rowIndex].CellValue());
+
+            if (dataGridView[i, rowIndex].CellValue() == null)
+            {
+                IsPcNeeded = false;
+                i++;
+            }
+            else
+            {
+                IsPcNeeded = bool.Parse(dataGridView[i++, rowIndex].CellValue());
+            }
+
+            if (dataGridView[i, rowIndex].CellValue() != null)
+                HoursPerDay = int.Parse(dataGridView[i++, rowIndex].CellValue());
+
         }
 
         private DateTime ParseDate(string dateString, DateType dateType)
@@ -88,6 +119,7 @@ namespace cttEditor
 
             if (!dateString.Equals("/"))
             {
+                dateString = cleanDateFormat(dateString);
                 dateTime = DateTime.ParseExact(dateString, "dd/MM/yyyy", CultureInfo.InvariantCulture);
             }
             else
@@ -101,6 +133,22 @@ namespace cttEditor
             return dateTime;
         }
 
+        private string cleanDateFormat(string datestring)
+        {
+            string missingDayZero = @"^([1-9])[\/](0?[1-9]|1[012])[\/\-]\d{4}$";
+            if (Regex.IsMatch(datestring, missingDayZero))
+            {
+                datestring = "0" + datestring;
+            }
+
+            string missingMonthZero = @"^(0?[1-9]|[12][0-9]|3[01])[\/]([1-9])[\/\-]\d{4}$";
+            if (Regex.IsMatch(datestring, missingMonthZero))
+            {
+                datestring = datestring.Insert(3, "0");
+            }
+            return datestring;
+        }
+
         private int ParseMaximumValue(string intString)
         {
             int value = int.MaxValue;
@@ -110,8 +158,6 @@ namespace cttEditor
             }
             return value;
         }
-
-
 
         public bool IsValid()
         {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using System.Windows.Forms;
 
 namespace cttEditor
 {
@@ -12,7 +13,7 @@ namespace cttEditor
             return Regex.Replace(line, @"\s+", " ");
         }
 
-        protected string[] GetStringData(string line)
+      protected string[] GetStringData(string line)
         {
             var simplifiedLine = SimplifyWhiteSpaces(line);
             return simplifiedLine.Split(new[] {" ", "\t"}, StringSplitOptions.None);

@@ -12,6 +12,7 @@ namespace cttEditor.PlanningEntities
 
     class HeaderData
     {
+        private Language _language;
         /*
             Name: EHB
             Language: NL
@@ -30,7 +31,16 @@ namespace cttEditor.PlanningEntities
          */
 
         public String PlanningName { get; set; }
-        public Language Language { get; set; }
+
+        public Language Language
+        {
+            get { return _language; }
+            set
+            {
+                _language = value;
+            }
+        }
+
         public DateTime StartDate { get; set; }
         public int CourseCount { get; set; }
         public int TeacherGroupCount { get; set; }
