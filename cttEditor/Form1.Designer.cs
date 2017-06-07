@@ -588,8 +588,10 @@ namespace cttEditor
             this.ConstraintsDataGridView.Name = "ConstraintsDataGridView";
             this.ConstraintsDataGridView.Size = new System.Drawing.Size(353, 145);
             this.ConstraintsDataGridView.TabIndex = 5;
-            this.ConstraintsDataGridView.CellValidating += new DataGridViewCellValidatingEventHandler(ConstraintsDataGridView_CellValidating);
             this.ConstraintsDataGridView.CellValueChanged += new DataGridViewCellEventHandler(ConstraintsDataGridView_CellValueChanged);
+            this.ConstraintsDataGridView.SelectionChanged += new EventHandler(ConstraintsDataGridView_SelectionChanged);
+            this.ConstraintsDataGridView.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.ConstraintsDataGridView_UserDeletingRow);
+
             // 
             // UnavailableCoursesLabel
             // 
@@ -707,6 +709,7 @@ namespace cttEditor
             this.CurriculaDataGridView.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.CurriculaDataGridView_CellValidating);
             this.CurriculaDataGridView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.CurriculaDataGridView_CellValueChanged);
             this.CurriculaDataGridView.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.CurriculaDataGridView_UserDeletingRow);
+            this.CurriculaDataGridView.SelectionChanged += new EventHandler(CurriculaDataGridView_SelectionChanged);
             // 
             // dataGridViewTextBoxColumn3
             // 
@@ -783,6 +786,8 @@ namespace cttEditor
             this.RoomsdataGridView.Size = new System.Drawing.Size(371, 145);
             this.RoomsdataGridView.TabIndex = 5;
             this.RoomsdataGridView.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.RoomsdataGridView_UserDeletingRow);
+            this.RoomsdataGridView.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.RoomsdataGridView_CellValidating);
+            this.RoomsdataGridView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.RoomsdataGridView_CellValueChanged);
             // 
             // dataGridViewTextBoxColumn1
             // 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -53,6 +54,9 @@ namespace cttEditor
 
         public static string CleanDateFormat(string datestring)
         {
+            if (datestring == null)
+                return "";
+            
             string missingDayZero = @"^([1-9])[\/](0?[1-9]|1[012])[\/\-]\d{4}$";
             if (Regex.IsMatch(datestring, missingDayZero))
             {
@@ -64,6 +68,15 @@ namespace cttEditor
             {
                 datestring = datestring.Insert(3, "0");
             }
+
+            string format = "dd/MM/yyyy";
+            DateTime dateTime;
+            if (!DateTime.TryParseExact(datestring, format, CultureInfo.InvariantCulture,
+                DateTimeStyles.None, out dateTime))
+            {
+                return "01/01/0001";
+            }
+
             return datestring;
         }
 

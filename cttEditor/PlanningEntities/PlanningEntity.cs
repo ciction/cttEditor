@@ -10,7 +10,7 @@ namespace cttEditor.PlanningEntities
         public enum DateType { Maximum, Minium, Exact };
 
         public abstract void ParseCtt(string line);
-        public abstract void FillDataFromGridline(DataGridView dataGridView, int rowIndex);
+        public abstract bool FillDataFromGridline(DataGridView dataGridView, int rowIndex);
         public abstract bool IsValid();
 
         //Grid - check duplicates
@@ -30,12 +30,12 @@ namespace cttEditor.PlanningEntities
         }
 
         //Grid - check duplicates
-        public static void CheckDuplicatesInGrid(DataGridView dataGridView, int rowIndex, string revertName, int keys, string message)
+        public static bool DuplicatesInGrid(DataGridView dataGridView, int rowIndex, string revertName, int keys, string message)
         {
             //compare first X  keyfields of current row, with whole table
 
-            if (rowIndex < 0) return;
-            for (int i = 0; i < dataGridView.RowCount; i++)
+            if (rowIndex < 0) return false;
+            for (int i = 0; i < dataGridView.RowCount - 1; i++)
             {
                 int sameKeys = 0;
                 for (int j = 0; j < keys; j++)
@@ -50,10 +50,12 @@ namespace cttEditor.PlanningEntities
                     EditorUtilities.ShowWarning(message);
                     for (int j = 0; j < keys; j++)
                     {
-                       dataGridView[0, keys].Value = null;
+                        dataGridView[j, rowIndex].Value = revertName ?? "";
+                        return true;
                     }
                 }
             }
+            return false;
         }
 
 

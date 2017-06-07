@@ -84,6 +84,46 @@ namespace cttEditor.PlanningEntities
             var dateTime = DateTime.ParseExact(dateString, "dd/MM/yyyy", CultureInfo.InvariantCulture);
             this.StartDate = dateTime;
         }
+
+        public List<String> Print()
+        {
+            string lanuageCode = "";
+            switch (Language)
+            {
+                case Language.Dutch:
+                    lanuageCode = "NL";
+                    break;
+                case Language.English:
+                    lanuageCode = "ENG";
+                    break;
+                default:
+                    this.Language = Language.English;
+                    MessageBox.Show(
+                        string.Format("Warning: language code <{0}> is not supported,\n the default language has been set to English ", lanuageCode), @"Unsuported language code");
+                    break;
+            }
+
+
+            List<String> lines = new List<string>
+            {
+                "Name:" + " " + PlanningName,
+                "Language:" + " " + lanuageCode,
+                "StartDate:" + " " + StartDate.ToString("dd/MM/yyyy"),
+                "Courses:" + " " + CourseCount,
+                "TeacherGroupCount:" + " " + TeacherGroupCount,
+                "Rooms:" + " " + RoomCount,
+                "Days:" + " " + DaysCount,
+                "Periods_per_day:" + " " + PeriodsPerDay,
+                "Curricula:" + " " + CurriculaCount,
+                "unavailable_courses:" + " " + UnavailableCoursesCount,
+                "unavailable_curricula:" + " " + UnavailableCurriculaCount,
+                "unavailable_hours_all:" + " " + UnavailableHoursAllCount,
+                "unavailable_days_all:" + " " + UnavailableDaysAllCount,
+                "DependentCourses:" + " " + DependentCoursesCount
+            };
+
+            return lines;
+        }
     }               
 }                   
                     

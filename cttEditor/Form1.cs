@@ -17,8 +17,8 @@ namespace cttEditor
         private string _courseNameBeforeUpdate = "";
         private string _roomNameBeforeUpdate = "";
         private string _curriculumNameBeforeUpdate = "";
-        private string _unavailabilityCourseConstraintNameBeforeUpdate = "";
-        
+        private Unavailability_Course _oldUnavailabilityCourse = null;
+
         //delegate members
         private delegate void AddPlanningEntityDelegate(string line);
 
@@ -114,7 +114,7 @@ namespace cttEditor
                                 break;
                             case "unavailable_courses:":
                                 _headerData.UnavailableCoursesCount = int.Parse(words[1]);
-
+                                UnavailabilityCountLabel.Text = _headerData.UnavailableCoursesCount.ToString();
                                 break;
                             case "unavailable_curricula:":
                                 _headerData.UnavailableCurriculaCount = int.Parse(words[1]);
@@ -677,10 +677,15 @@ namespace cttEditor
         //*************************************************
         // UNAVAILABILITY_COURSE:     GRID
         //*************************************************
-        private void ConstraintsDataGridView_CellValidating(object sender,
-            DataGridViewCellValidatingEventArgs e)
+        private void ConstraintsDataGridView_SelectionChanged(object sender,
+            EventArgs eventArgs)
         {
-            _unavailabilityCourseConstraintNameBeforeUpdate = ConstraintsDataGridView[0, e.RowIndex].CellValue();
+            DataGridView dataGridView = ConstraintsDataGridView;
+            if (dataGridView.CurrentRow != null)
+            {
+                int rowIndex = dataGridView.CurrentRow.Index;
+                _oldUnavailabilityCourse = Unavailability_Course.FromDatabase(dataGridView, rowIndex);
+            }
         }
 
         /// <summary>
@@ -694,40 +699,73 @@ namespace cttEditor
 
             DataGridView dataGridView = ConstraintsDataGridView;
 
+            //clean date
+            dataGridView[1, rowIndex].Value = EditorUtilities.CleanDateFormat(dataGridView[1, rowIndex].CellValue());
+
             //revert course name if it already existed
-            Unavailability_Course.CheckDuplicatesInGrid(dataGridView, rowIndex, _unavailabilityCourseConstraintNameBeforeUpdate,3,
-                "Warning: Duplicate Unavailability_Courses not allowed, reverting back to previous state");
-
-            //check if name is not null
-            if (dataGridView[0, rowIndex].Value == null)
-                return;
-            if (dataGridView[1, rowIndex].Value == null)
-                dataGridView[1, rowIndex].Value = 1;
-
-
-
-
-            //todo WIP ----------------------------
-            var oldCourse = Course.FromDatabase(_courseNameBeforeUpdate);
-
+            if (_oldUnavailabilityCourse != null)
+            {
+                if (Unavailability_Course.DuplicatesInGrid(dataGridView, rowIndex,
+                    _oldUnavailabilityCourse.Course.CourseCode, 3,
+                    "Warning: Duplicate Unavailability_Courses not allowed, reverting back to previous state"))
+                {
+                    dataGridView[1, rowIndex].Value = _oldUnavailabilityCourse.DateTime.Date.ToString("d");
+                    dataGridView[2, rowIndex].Value = _oldUnavailabilityCourse.Timeslot;
+                    return;
+                }
+            }
+            else
+            {
+                if (Unavailability_Course.DuplicatesInGrid(dataGridView, rowIndex,"", 3,
+                    "Warning: Duplicate Unavailability_Courses not allowed, reverting back to previous state"))
+                {
+                    return;
+                }
+            }
+           
 
             //after checks
-            var oldRoom = Room.FromDatabase(_roomNameBeforeUpdate);
-            var newRoom = new Room();
-            newRoom.FillDataFromGridline(dataGridView, rowIndex);
-
-
-            if (newRoom.IsValid())
+            Unavailability_Course newUnavailabilityCourse = new Unavailability_Course();
+            if (!newUnavailabilityCourse.FillDataFromGridline(dataGridView, rowIndex))
             {
-                EntityDataBase.Rooms.Remove(oldRoom);
-                if (Room.FromDatabase(newRoom.RoomName) == null)
-                    EntityDataBase.Rooms.Add(newRoom);
-
-
-                _headerData.RoomCount = EntityDataBase.Rooms.Count;
-                RoomsCountLabel.Text = _headerData.RoomCount.ToString();
+                if(_oldUnavailabilityCourse != null)
+                    dataGridView[0, rowIndex].Value = _oldUnavailabilityCourse.Course.CourseCode;
+                return;
             }
 
+
+
+
+            //            if (Unavailability_Course.FromDatabase() == null)
+            if (EntityDataBase.Unavailability_CourseConstraints.IndexOf(newUnavailabilityCourse) == -1)
+            {
+                if(_oldUnavailabilityCourse != null)
+                    EntityDataBase.Unavailability_CourseConstraints.Remove(_oldUnavailabilityCourse);
+                EntityDataBase.Unavailability_CourseConstraints.Add(newUnavailabilityCourse);
+            }
+
+
+            _headerData.UnavailableCoursesCount = EntityDataBase.Unavailability_CourseConstraints.Count;
+                UnavailabilityCountLabel.Text = _headerData.UnavailableCoursesCount.ToString();
+
+        }
+
+        //delete
+        private void ConstraintsDataGridView_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+        {
+            int rowIndex = e.Row.Index;
+            if (rowIndex < 0)
+                return;
+            DataGridView dataGridView = ConstraintsDataGridView;
+
+            var unavailabilityCourseToDelete = Unavailability_Course.FromDatabase(dataGridView, rowIndex);
+            if (unavailabilityCourseToDelete.DeleteFromDatabase())
+            {
+                //update UI
+                _headerData.UnavailableCoursesCount = EntityDataBase.Unavailability_CourseConstraints.Count;
+                UnavailabilityCountLabel.Text = _headerData.UnavailableCoursesCount.ToString();
+            }
+            
         }
 
 
@@ -787,7 +825,14 @@ namespace cttEditor
 
         private void saveButton_Click(object sender, EventArgs e)
         {
-            //todo do save logic
+            List<String> lines = new List<string>();
+            lines.AddRange(_headerData.Print());
+            lines.Add("");
+            lines.AddRange(EntityDataBase.Print());
+            lines.Add("");
+            lines.Add("END.");
+            System.IO.File.WriteAllLines(@"result.ctt", lines);
+
 
             this.Close();
         }

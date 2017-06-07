@@ -79,10 +79,12 @@ namespace cttEditor.PlanningEntities
             }
         }
 
-        public override void FillDataFromGridline(DataGridView dataGridView, int rowIndex)
+        public override bool FillDataFromGridline(DataGridView dataGridView, int rowIndex)
         {
             var i = 0;
             CurriculumCode = dataGridView[i++, rowIndex].CellValue();
+
+            return true;
         }
 
         public override bool IsValid()
@@ -111,6 +113,22 @@ namespace cttEditor.PlanningEntities
         {
             Courses.Remove(course);
             return true;
+        }
+
+
+        public string Print()
+        {
+            string line;
+            line =
+                CurriculumCode + "\t" + "\t" +
+                CourseCount + "\t" + "\t";
+
+            foreach (var course in Courses)
+            {
+                line += course.CourseCode + " ";
+            }
+
+            return line;
         }
 
         // compare based on name (for hashset and lists)

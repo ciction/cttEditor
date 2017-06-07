@@ -76,7 +76,7 @@ namespace cttEditor.PlanningEntities
             destinationGrid.Rows.Add(RoomName, RoomCapacity);
         }
 
-        public override void FillDataFromGridline(DataGridView dataGridView, int rowIndex)
+        public override bool FillDataFromGridline(DataGridView dataGridView, int rowIndex)
         {
             var i = 0;
             RoomName = dataGridView[i++, rowIndex].CellValue();
@@ -93,7 +93,7 @@ namespace cttEditor.PlanningEntities
 
             }
 
-
+            return true;
         }
 
         public override bool IsValid()
@@ -120,6 +120,14 @@ namespace cttEditor.PlanningEntities
         public override int GetHashCode()
         {
             return (RoomName != null ? RoomName.GetHashCode() : 0);
+        }
+
+        public string Print()
+        {
+            var line = RoomName + "\t" + "\t" +
+                          RoomCapacity + "\t" + "\t" +
+                          PcCount;
+            return line;
         }
     }
 }

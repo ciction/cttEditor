@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -120,7 +121,7 @@ namespace cttEditor.PlanningEntities
             }
         }
 
-        public override void FillDataFromGridline(DataGridView dataGridView, int rowIndex)
+        public override bool FillDataFromGridline(DataGridView dataGridView, int rowIndex)
         {
             var i = 0;
             CourseCode = dataGridView[i++, rowIndex].CellValue();
@@ -147,6 +148,8 @@ namespace cttEditor.PlanningEntities
 
             if (dataGridView[i, rowIndex].CellValue() != null)
                 HoursPerDay = int.Parse(dataGridView[i++, rowIndex].CellValue());
+
+            return true;
 
         }
 
@@ -179,6 +182,32 @@ namespace cttEditor.PlanningEntities
                 StudentSize != 0)
                 return true;
             return false;
+        }
+
+
+        public string Print()
+        {
+            var maximumWorkingDaysString = MaximumWorkingDays == int.MaxValue ? "/" : MaximumWorkingDays.ToString();
+            var MinimumWorkingDaysString = MinimumWorkingDays < 1 ? "/" : MinimumWorkingDays.ToString();
+            var minimumDateString = MinimumDate.Equals(DateTime.MinValue) ? "/" : MinimumDate.ToString("dd/MM/yyy");
+            var deadlineDateString = DeadlineDate.Equals(DateTime.MaxValue) ? "/" : DeadlineDate.ToString("dd/MM/yyy");
+
+
+
+            string line;
+            line =
+                CourseCode + "\t" + 
+                TeacherCode + "\t" + "\t" + "\t" + "\t" +
+                LectureSize + "\t" + "\t" +
+                MinimumWorkingDaysString + "\t" + "\t" +
+                StudentSize + "\t" + "\t" +
+                minimumDateString + "\t" + "\t" +
+                deadlineDateString + "\t" + "\t" +
+                maximumWorkingDaysString + "\t" + "\t" +
+                IsPcNeeded + "\t" + "\t" +
+                HoursPerDay;
+
+            return line;
         }
 
 
