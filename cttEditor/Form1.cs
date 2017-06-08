@@ -18,6 +18,9 @@ namespace cttEditor
         private string _roomNameBeforeUpdate = "";
         private string _curriculumNameBeforeUpdate = "";
         private Unavailability_Course _oldUnavailabilityCourse = null;
+        private Unavailability_Curriculum _oldUnavailabilityCurriculum= null;
+        private Unavailability_Hours_All _oldUnavailabilityHoursAll= null;
+        private Unavailability_Days_All _oldUnavailabilityDaysAll= null;
 
         //delegate members
         private delegate void AddPlanningEntityDelegate(string line);
@@ -118,15 +121,22 @@ namespace cttEditor
                                 break;
                             case "unavailable_curricula:":
                                 _headerData.UnavailableCurriculaCount = int.Parse(words[1]);
+                                UNAVAILABILITY_CURRICULUM_count_label.Text =
+                                    _headerData.UnavailableCoursesCount.ToString();
                                 break;
                             case "unavailable_hours_all:":
                                 _headerData.UnavailableHoursAllCount = int.Parse(words[1]);
+                                Unavailable_hours_all__count_label.Text =
+                                    _headerData.UnavailableHoursAllCount.ToString();
                                 break;
                             case "unavailable_days_all:":
                                 _headerData.UnavailableDaysAllCount = int.Parse(words[1]);
+                                Unavailable_Days_All_count_label.Text =
+                                    _headerData.UnavailableDaysAllCount.ToString();
                                 break;
                             case "DependentCourses:":
                                 _headerData.DependentCoursesCount = int.Parse(words[1]);
+
                                 break;
 
 
@@ -136,7 +146,7 @@ namespace cttEditor
                                 ParseDataBlock(linenumber + 1, _headerData.CourseCount, file, AddCourse);
                                 //set UI
                                 //update teacher tab first from imported courses
-                                foreach (var teacher in TeacherDatabase.TeacherCodes)
+                                foreach (var teacher in EntityDataBase.TeacherGroups)
                                 {
                                     dataGridViewTeachers.Rows.Add(teacher);
                                 }
@@ -147,6 +157,12 @@ namespace cttEditor
 
                                 break;
                             case "TEACHER_GROUPS:":
+                                ParseDataBlock(linenumber + 1, _headerData.UnavailableCurriculaCount, file, AddTeacherGroups);
+
+                                foreach (var teacherGroup in EntityDataBase.TeacherGroups)
+                                {
+                                    teacherGroup.AddToDataGrid(TeacherGroups_dataGridView);
+                                }
                                 break;
                             case "ROOMS:":
                                 //add rooms to database
@@ -166,17 +182,33 @@ namespace cttEditor
                                 UpdateCurriculumCoursesUi();
                                 break;
                             case "UNAVAILABILITY_COURSE:":
-                                ParseDataBlock(linenumber + 1, _headerData.CurriculaCount, file, AddunavailabilityCourse);
+                                ParseDataBlock(linenumber + 1, _headerData.UnavailableCoursesCount, file, AddunavailabilityCourse);
                                 foreach (var unavailabilityCourse in EntityDataBase.Unavailability_CourseConstraints)
                                         unavailabilityCourse.AddToDataGrid(ConstraintsDataGridView);
                                 break;
                             case "UNAVAILABILITY_CURRICULUM:":
+                                ParseDataBlock(linenumber + 1, _headerData.UnavailableCurriculaCount, file, AddunavailabilityCurriculum);
+                                foreach (var unavailabilityCurriculum in EntityDataBase.Unavailability_CurriculumConstraints)
+                                    unavailabilityCurriculum.AddToDataGrid(CurriculumConstraintsDataGridView);
                                 break;
                             case "UNAVAILABLE_HOURS_ALL:":
+                                ParseDataBlock(linenumber + 1, _headerData.UnavailableHoursAllCount, file, AddunavailabilityHoursAll);
+                                foreach (var unavailabilityHoursAll in EntityDataBase.Unavailability_HoursAllConstraints)
+                                    unavailabilityHoursAll.AddToDataGrid(UNAVAILABLE_HOURS_ALL_dataGridView);
                                 break;
                             case "UNAVAILABLE_DAYS_ALL:":
+                                ParseDataBlock(linenumber + 1, _headerData.UnavailableDaysAllCount, file, AddunavailabilityDaysAll);
+                                foreach (var unavailabilityDaysAll in EntityDataBase.Unavailability_DaysAllConstraints)
+                                    unavailabilityDaysAll.AddToDataGrid(Unavailable_Days_All_label_dataGridView);
                                 break;
                             case "DEPENDENCIES:":
+                                ParseDataBlock(linenumber + 1, _headerData.UnavailableDaysAllCount, file,
+                                    AddCourseDependencies);
+
+                                foreach (var course in EntityDataBase.Courses)
+                                {
+                                        course.AddToDependencies(CourseDependencies_dataGridView);
+                                }
                                 break;
                             default:
                                 break;
@@ -232,6 +264,58 @@ namespace cttEditor
             var newUnavailabilityCourse = new Unavailability_Course();
             newUnavailabilityCourse.ParseCtt(line);
             EntityDataBase.Unavailability_CourseConstraints.Add(newUnavailabilityCourse);
+        }
+
+        //Parse DataBlock - UNAVAILABILITY_Curriculum
+        private void AddunavailabilityCurriculum(string line)
+        {
+            var newUnavailabilityCurriculum= new Unavailability_Curriculum();
+            newUnavailabilityCurriculum.ParseCtt(line);
+            EntityDataBase.Unavailability_CurriculumConstraints.Add(newUnavailabilityCurriculum);
+        }
+
+        //Parse DataBlock - UNAVAILABLE_HOURS_ALL
+        private void AddunavailabilityHoursAll(string line)
+        {
+            var newUnavailabilityHoursAll= new Unavailability_Hours_All();
+            newUnavailabilityHoursAll.ParseCtt(line);
+            EntityDataBase.Unavailability_HoursAllConstraints.Add(newUnavailabilityHoursAll);
+        }
+
+        //Parse DataBlock - UNAVAILABILITY_DAYS_ALL
+        private void AddunavailabilityDaysAll(string line)
+        {
+            var newUnavailabilityDaysAll= new Unavailability_Days_All();
+            newUnavailabilityDaysAll.ParseCtt(line);
+            EntityDataBase.Unavailability_DaysAllConstraints.Add(newUnavailabilityDaysAll);
+        }
+
+        //Parse DataBlock - Dependencies
+        private void AddCourseDependencies(string line)
+        {
+            var simplifiedLine = Regex.Replace(line, @"\s+", " ");
+            var words = simplifiedLine.Split(new[] { " ", "\t" }, StringSplitOptions.None);
+
+           Course course = Course.FromDatabase(words[0]);
+            for (int i = 1; i < words.Length; i++)
+            {
+                course.Dependencies.Add(Course.FromDatabase(words[i]));
+            }
+
+        }
+
+        //Parse DataBlock - TeacherGroups
+        private void AddTeacherGroups(string line)
+        {
+            var simplifiedLine = Regex.Replace(line, @"\s+", " ");
+            var words = simplifiedLine.Split(new[] { " ", "\t" }, StringSplitOptions.None);
+
+            TeacherGroup teacherGroup = TeacherGroup.FromDatabase(words[0]);
+            for (int i = 1; i < words.Length; i++)
+            {
+                    teacherGroup.AddTeacher(words[i]);
+            }
+
         }
 
 
@@ -293,6 +377,40 @@ namespace cttEditor
         // COURSES:     GRID
         //*************************************************
 
+        private void UpdateTeacherList(Course deletedOrModifiedCourse)
+        {
+            List<String> teachersListInGrid = new List<string>();
+            //for (int row = 0; row < CoursesdataGridView.RowCount; row++)
+            //{
+            //    teachersListInGrid.Add(CoursesdataGridView[1, row].CellValue());
+            //}
+            foreach (var course in EntityDataBase.Courses)
+            {
+                teachersListInGrid.Add(course.TeacherGroup.TeacherCode);
+            }
+
+            var teachersWithoutCourse = (from t in EntityDataBase.TeacherGroups
+                                        where !teachersListInGrid.Contains(t.TeacherCode)
+                                        select t).ToList();
+
+
+            foreach (var teacher in teachersWithoutCourse)
+            {
+                EntityDataBase.TeacherGroups.Remove(teacher);
+            }
+
+
+            foreach (var teacher in EntityDataBase.TeacherGroups)
+            {
+                foreach (var subTeacher in teachersWithoutCourse)
+                {
+                    teacher.TeacherList.Remove(subTeacher);
+                }
+            }
+
+
+        }
+
         /// <summary>
         /// editing courses, save old course name before each update
         /// </summary>
@@ -323,8 +441,6 @@ namespace cttEditor
             //revert course name if it already existed
             PlanningEntity.CheckDuplicatesInGrid(CoursesdataGridView,rowIndex,_courseNameBeforeUpdate);
            
-
-
             var cellValue = CoursesdataGridView[e.ColumnIndex, rowIndex].Value;
             //check null fields
             if (cellValue == null && nullableColumns.IndexOf(e.ColumnIndex) == -1)
@@ -344,8 +460,6 @@ namespace cttEditor
                     EditorUtilities.CheckIfValidDate_message(cellValue.ToString());
             }
 
-
-            //todo check whole row and add course
             for (int i = 0; i < CoursesdataGridView.ColumnCount; i++)
             {
                 //check null fields
@@ -374,22 +488,41 @@ namespace cttEditor
             newCourse.FillDataFromGridline(CoursesdataGridView, rowIndex);
             
             if (newCourse.IsValid())
-                {
+            {
                     EntityDataBase.Courses.Remove(oldCourse);
                     EntityDataBase.Courses.Add(newCourse);
 
-                   
 
                 foreach (var curriculum in EntityDataBase.Curricula)
                 {
                     curriculum.Courses.Remove(oldCourse);
                     curriculum.Courses.Add(newCourse);
                 }
+
                 //Update UI
                 _headerData.CourseCount = EntityDataBase.Courses.Count;
                 CoursesCountLabel.Text = _headerData.CourseCount.ToString();
                 UpdateCurriculumCoursesUi();
+
+                CourseDependencies_dataGridView.Rows.Clear();
+                foreach (var course in EntityDataBase.Courses)
+                {
+                    course.AddToDependencies(CourseDependencies_dataGridView);
                 }
+
+                //delete teachers if needed
+                UpdateTeacherList(oldCourse);
+
+                dataGridViewTeachers.Rows.Clear();
+                TeacherGroups_dataGridView.Rows.Clear();
+                foreach (var teacher in EntityDataBase.TeacherGroups)
+                {
+                    dataGridViewTeachers.Rows.Add(teacher);
+                    TeacherGroups_dataGridView.Rows.Add(teacher);
+                }
+
+
+            }
             
         }
 
@@ -415,6 +548,10 @@ namespace cttEditor
                 {
                     curriculum.Courses.Remove(courseToDelete);
                 }
+                foreach (var course in EntityDataBase.Courses)
+                {
+                    course.Dependencies.Remove(courseToDelete);
+                }
             }
             else
             {
@@ -423,9 +560,137 @@ namespace cttEditor
             }
             //update UI
             UpdateCurriculumCoursesUi();
+            
+
+
+            CourseDependencies_dataGridView.Rows.Clear();
+            foreach (var course in EntityDataBase.Courses)
+            {
+                course.AddToDependencies(CourseDependencies_dataGridView);
+            }
+
+            //delete teachers if needed
+            UpdateTeacherList(courseToDelete);
+
+            //update teachers UI
+            dataGridViewTeachers.Rows.Clear();
+            TeacherGroups_dataGridView.Rows.Clear();
+            foreach (var teacher in EntityDataBase.TeacherGroups)
+            {
+                dataGridViewTeachers.Rows.Add(teacher);
+                TeacherGroups_dataGridView.Rows.Add(teacher);
+
+            }
+        }
+
+      
+        //UpdateCurriculumCoursesUi on selection changed
+        private void CourseDependencies_dataGridView_SelectionChanged(object sender, EventArgs e)
+        {
+            UpdateCourseDependenciesUI();
+        }
+
+        private void UpdateCourseDependenciesUI()
+        {
+            CourseDependenciesInactive_listBox .Items.Clear();
+            CourseDependencies_listBox .Items.Clear();
+
+            var selectedCourse = Course.FromDatabase(CourseDependencies_dataGridView);
+            if (selectedCourse != null)
+                selectedCourse.UpdateDependencieListboxes(CourseDependencies_listBox, CourseDependenciesInactive_listBox);
+        }
+
+        //add course dependency
+        private void AddCourseDependencyButton_Click(object sender, EventArgs e)
+        {
+            var selectedCourse = Course.FromDatabase(CourseDependencies_dataGridView);
+            var dependencyCourse = Course.FromDatabase(CourseDependenciesInactive_listBox);
+
+            if (selectedCourse == null) return;
+            if (dependencyCourse == null) return;
+            try
+            {
+                selectedCourse.Dependencies.Add(dependencyCourse);
+                UpdateCourseDependenciesUI();
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+            }
+        }
+
+        private void RemoveCourseDependencyButton_Click(object sender, EventArgs e)
+        {
+            var selectedCourse = Course.FromDatabase(CourseDependencies_dataGridView);
+            var dependencyCourse = Course.FromDatabase(CourseDependencies_listBox);
+
+            if (selectedCourse == null) return;
+            if (dependencyCourse == null) return;
+            try
+            {
+                selectedCourse.Dependencies.Remove(dependencyCourse);
+                UpdateCourseDependenciesUI();
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+            }
+        }
+
+        //*************************************************
+        // Teacher groups:     GRID
+        //*************************************************
+
+        private void TeacherGroups_dataGridView_SelectionChanged(object sender, EventArgs e)
+        {
+            UpdateTeacherGroupsUi();
+        }
+        private void UpdateTeacherGroupsUi()
+        {
+            TeachersInGroup_listBox.Items.Clear();
+            OtherTeachers_listBox.Items.Clear();
+
+            var selectedGroup= TeacherGroup.FromDatabase(TeacherGroups_dataGridView);
+            if(selectedGroup != null)
+                selectedGroup.UpdateDependencieListboxes(TeachersInGroup_listBox, OtherTeachers_listBox);
         }
 
 
+        private void addTeacherGroupButton_Click(object sender, EventArgs e)
+        {
+            var selectedTeacherGroup = TeacherGroup.FromDatabase(TeacherGroups_dataGridView);
+            var teacherToAdd = TeacherGroup.FromDatabase(OtherTeachers_listBox);
+
+            if (selectedTeacherGroup == null) return;
+            if (teacherToAdd == null) return;
+            try
+            {
+                selectedTeacherGroup.TeacherList.Add(teacherToAdd);
+                UpdateTeacherGroupsUi();
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+            }
+        }
+
+        private void RemoveTeacherGroupButton_Click(object sender, EventArgs e)
+        {
+            var selectedTeacherGroup = TeacherGroup.FromDatabase(TeacherGroups_dataGridView);
+            var teacherToRemove = TeacherGroup.FromDatabase(TeachersInGroup_listBox);
+
+            if (selectedTeacherGroup == null) return;
+            if (teacherToRemove == null) return;
+            try
+            {
+                selectedTeacherGroup.TeacherList.Remove(teacherToRemove);
+                UpdateTeacherGroupsUi();
+            }
+            catch (Exception exception)
+            {
+                Console.WriteLine(exception);
+            }
+        }
 
         //*************************************************
         // CURRICULA:     GRID
@@ -508,9 +773,6 @@ namespace cttEditor
             //update UI
             UpdateCurriculumCoursesUi();
         }
-
-
-
 
         //UpdateCurriculumCoursesUi on selection changed
         private void CurriculaDataGridView_SelectionChanged(object sender, EventArgs e)
@@ -770,6 +1032,290 @@ namespace cttEditor
 
 
         //*************************************************
+        // UNAVAILABILITY_CURRICULUM:     GRID
+        //*************************************************
+
+        /// editing UNAVAILABILITY_CURRICULUM before
+        private void CurriculumConstraints_SelectionChanged(object sender,
+            EventArgs eventArgs)
+        {
+            DataGridView dataGridView = CurriculumConstraintsDataGridView;
+            if (dataGridView.CurrentRow != null)
+            {
+                int rowIndex = dataGridView.CurrentRow.Index;
+                _oldUnavailabilityCurriculum = Unavailability_Curriculum.FromDatabase(dataGridView, rowIndex);
+            }
+        }
+
+        /// editing UNAVAILABILITY_CURRICULUM after and while
+        private void CurriculumConstraints_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            int rowIndex = e.RowIndex;
+            if (rowIndex < 0)
+                return;
+
+            DataGridView dataGridView = CurriculumConstraintsDataGridView;
+
+            //clean date
+            dataGridView[1, rowIndex].Value = EditorUtilities.CleanDateFormat(dataGridView[1, rowIndex].CellValue());
+
+            //revert curriculum name if it already existed
+            if (_oldUnavailabilityCurriculum != null)
+            {
+                if (Unavailability_Curriculum.DuplicatesInGrid(dataGridView, rowIndex,
+                    _oldUnavailabilityCurriculum.Curriculum.CurriculumCode, 3,
+                    "Warning: Duplicate Unavailability_Curriculum not allowed, reverting back to previous state"))
+                {
+                    dataGridView[1, rowIndex].Value = _oldUnavailabilityCurriculum.DateTime.Date.ToString("d");
+                    dataGridView[2, rowIndex].Value = _oldUnavailabilityCurriculum.Timeslot;
+                    return;
+                }
+            }
+            else
+            {
+                if (Unavailability_Curriculum.DuplicatesInGrid(dataGridView, rowIndex, "", 3,
+                    "Warning: Duplicate Unavailability_Curriculum not allowed, reverting back to previous state"))
+                {
+                    return;
+                }
+            }
+
+
+            //after checks
+            Unavailability_Curriculum newUnavailabilityCurriculum= new Unavailability_Curriculum();
+            if (!newUnavailabilityCurriculum.FillDataFromGridline(dataGridView, rowIndex))
+            {
+                if (_oldUnavailabilityCurriculum != null)
+                    dataGridView[0, rowIndex].Value = _oldUnavailabilityCurriculum.Curriculum.CurriculumCode;
+                return;
+            }
+
+
+
+
+            //  if (_oldUnavailabilityCurriculum.FromDatabase() == null)
+            if (EntityDataBase.Unavailability_CurriculumConstraints.IndexOf(newUnavailabilityCurriculum) == -1)
+            {
+                if (_oldUnavailabilityCurriculum != null)
+                    EntityDataBase.Unavailability_CurriculumConstraints.Remove(_oldUnavailabilityCurriculum);
+                EntityDataBase.Unavailability_CurriculumConstraints.Add(newUnavailabilityCurriculum);
+            }
+
+
+            _headerData.UnavailableCurriculaCount= EntityDataBase.Unavailability_CurriculumConstraints.Count;
+            UNAVAILABILITY_CURRICULUM_count_label.Text = _headerData.UnavailableCurriculaCount.ToString();
+
+        }
+
+        //delete
+        private void CurriculumConstraints_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+        {
+            int rowIndex = e.Row.Index;
+            if (rowIndex < 0)
+                return;
+            DataGridView dataGridView = CurriculumConstraintsDataGridView;
+
+            var unavailabilityCurriculumToDelete = Unavailability_Curriculum.FromDatabase(dataGridView, rowIndex);
+            if (unavailabilityCurriculumToDelete.DeleteFromDatabase())
+            {
+                //update UI
+                _headerData.UnavailableCurriculaCount = EntityDataBase.Unavailability_CurriculumConstraints.Count;
+                UNAVAILABILITY_CURRICULUM_count_label.Text = _headerData.UnavailableCurriculaCount.ToString();
+            }
+
+        }
+
+
+        //*************************************************
+        // UNAVAILABILITY_HOURS_ALL
+        //*************************************************
+
+        /// editing Unavailability_Hours_All before
+        private void UNAVAILABLE_HOURS_ALL_SelectionChanged(object sender,
+            EventArgs eventArgs)
+        {
+            DataGridView dataGridView = UNAVAILABLE_HOURS_ALL_dataGridView;
+            if (dataGridView.CurrentRow != null)
+            {
+                int rowIndex = dataGridView.CurrentRow.Index;
+                _oldUnavailabilityHoursAll = Unavailability_Hours_All.FromDatabase(dataGridView, rowIndex);
+            }
+        }
+
+        /// editing Unavailability_Hours_All after and while
+        private void UNAVAILABLE_HOURS_ALLCellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            int rowIndex = e.RowIndex;
+            if (rowIndex < 0)
+                return;
+
+            DataGridView dataGridView = UNAVAILABLE_HOURS_ALL_dataGridView;
+
+            //clean date
+            dataGridView[0, rowIndex].Value = EditorUtilities.CleanDateFormat(dataGridView[0, rowIndex].CellValue());
+
+            //revert Hours_All name if it already existed
+            if (_oldUnavailabilityHoursAll!= null)
+            {
+                if (Unavailability_Hours_All.DuplicatesInGrid(dataGridView, rowIndex,
+                    _oldUnavailabilityHoursAll.DateTime.ToString("dd/MM/yyyy"), 2,
+                    "Warning: Duplicate Unavailability_Hours_All not allowed, reverting back to previous state"))
+                {
+                    dataGridView[1, rowIndex].Value = _oldUnavailabilityHoursAll.Timeslot;
+                    return;
+                }
+            }
+            else
+            {
+                if (Unavailability_Hours_All.DuplicatesInGrid(dataGridView, rowIndex, "", 2,
+                    "Warning: Duplicate Unavailability_Hours_All not allowed, reverting back to previous state"))
+                {
+                    return;
+                }
+            }
+
+            //after checks
+            Unavailability_Hours_All newUnavailabilityHours_All = new Unavailability_Hours_All();
+            if (!newUnavailabilityHours_All.FillDataFromGridline(dataGridView, rowIndex))
+            {
+                if (_oldUnavailabilityHoursAll != null)
+                    dataGridView[0, rowIndex].Value = _oldUnavailabilityHoursAll.DateTime.ToString("dd/MM/yyyy");
+                return;
+            }
+
+
+
+
+            //  if (_oldUnavailabilityHoursAll.FromDatabase() == null)
+            if (EntityDataBase.Unavailability_HoursAllConstraints.IndexOf(newUnavailabilityHours_All) == -1)
+            {
+                if (_oldUnavailabilityHoursAll != null)
+                    EntityDataBase.Unavailability_HoursAllConstraints.Remove(_oldUnavailabilityHoursAll);
+                EntityDataBase.Unavailability_HoursAllConstraints.Add(newUnavailabilityHours_All);
+            }
+
+
+            _headerData.UnavailableHoursAllCount = EntityDataBase.Unavailability_HoursAllConstraints.Count;
+            Unavailable_hours_all__count_label.Text = _headerData.UnavailableHoursAllCount.ToString();
+
+        }
+
+        //delete
+        private void UNAVAILABLE_HOURS_ALLUserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+        {
+            int rowIndex = e.Row.Index;
+            if (rowIndex < 0)
+                return;
+            DataGridView dataGridView = UNAVAILABLE_HOURS_ALL_dataGridView;
+
+            var unavailabilityHours_allToDelete = Unavailability_Hours_All.FromDatabase(dataGridView, rowIndex);
+            if (unavailabilityHours_allToDelete.DeleteFromDatabase())
+            {
+                //update UI
+                _headerData.UnavailableHoursAllCount= EntityDataBase.Unavailability_HoursAllConstraints.Count;
+                Unavailable_hours_all__count_label.Text = _headerData.UnavailableHoursAllCount.ToString();
+            }
+
+        }
+
+
+        //*************************************************
+        // UNAVAILABILITY_DAYS_ALL
+        //*************************************************
+
+        /// editing Unavailability_Days_All before
+        private void UNAVAILABLE_Days_ALL_SelectionChanged(object sender,
+            EventArgs eventArgs)
+        {
+            DataGridView dataGridView = Unavailable_Days_All_label_dataGridView;
+            if (dataGridView.CurrentRow != null)
+            {
+                int rowIndex = dataGridView.CurrentRow.Index;
+                _oldUnavailabilityDaysAll = Unavailability_Days_All.FromDatabase(dataGridView, rowIndex);
+            }
+        }
+
+        /// editing Unavailability_Days_All after and while
+        private void UNAVAILABLE_Days_ALL_CellValueChanged(object sender, DataGridViewCellEventArgs e)
+        {
+            int rowIndex = e.RowIndex;
+            if (rowIndex < 0)
+                return;
+
+            DataGridView dataGridView = Unavailable_Days_All_label_dataGridView;
+
+            //clean date
+            dataGridView[0, rowIndex].Value = EditorUtilities.CleanDateFormat(dataGridView[0, rowIndex].CellValue());
+
+            //revert Days_All name if it already existed
+            if (_oldUnavailabilityDaysAll != null)
+            {
+                if (Unavailability_Days_All.DuplicatesInGrid(dataGridView, rowIndex,
+                    _oldUnavailabilityDaysAll.DateTime.ToString("dd/MM/yyyy"), 1,
+                    "Warning: Duplicate Unavailability_Days_All not allowed, reverting back to previous state"))
+                {
+                    return;
+                }
+            }
+            else
+            {
+                if (Unavailability_Days_All.DuplicatesInGrid(dataGridView, rowIndex, "", 1,
+                    "Warning: Duplicate Unavailability_Days_All not allowed, reverting back to previous state"))
+                {
+                    return;
+                }
+            }
+
+            //after checks
+            Unavailability_Days_All newUnavailabilityDaysAll= new Unavailability_Days_All();
+            if (!newUnavailabilityDaysAll.FillDataFromGridline(dataGridView, rowIndex))
+            {
+                if (_oldUnavailabilityDaysAll != null)
+                    dataGridView[0, rowIndex].Value = _oldUnavailabilityDaysAll.DateTime.ToString("dd/MM/yyyy");
+                return;
+            }
+
+
+
+
+            //  if (_oldUnavailabilityDaysAll.FromDatabase() == null)
+            if (EntityDataBase.Unavailability_DaysAllConstraints.IndexOf(newUnavailabilityDaysAll) == -1)
+            {
+                if (_oldUnavailabilityDaysAll != null)
+                    EntityDataBase.Unavailability_DaysAllConstraints.Remove(_oldUnavailabilityDaysAll);
+                EntityDataBase.Unavailability_DaysAllConstraints.Add(newUnavailabilityDaysAll);
+            }
+
+
+            _headerData.UnavailableDaysAllCount= EntityDataBase.Unavailability_DaysAllConstraints.Count;
+            Unavailable_Days_All_count_label.Text = _headerData.UnavailableDaysAllCount.ToString();
+
+        }
+
+        //delete
+        private void UNAVAILABLE_Days_ALL_UserDeletingRow(object sender, DataGridViewRowCancelEventArgs e)
+        {
+            int rowIndex = e.Row.Index;
+            if (rowIndex < 0)
+                return;
+            DataGridView dataGridView = Unavailable_Days_All_label_dataGridView;
+
+            var unavailabilityDaysAll_toDelete= Unavailability_Days_All.FromDatabase(dataGridView, rowIndex);
+            if (unavailabilityDaysAll_toDelete.DeleteFromDatabase())
+            {
+                //update UI
+                _headerData.UnavailableDaysAllCount = EntityDataBase.Unavailability_DaysAllConstraints.Count;
+                Unavailable_Days_All_count_label.Text = _headerData.UnavailableDaysAllCount.ToString();
+            }
+
+        }
+
+
+
+
+
+
+        //*************************************************
         // COPY PASTE EXCEL
         //*************************************************
         private void pasteExcelCourse_Click(object sender, EventArgs e)
@@ -834,7 +1380,9 @@ namespace cttEditor
             System.IO.File.WriteAllLines(@"result.ctt", lines);
 
 
-            this.Close();
+//            this.Close();
         }
+
+      
     }
 }

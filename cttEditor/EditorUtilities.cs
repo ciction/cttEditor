@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -77,9 +78,20 @@ namespace cttEditor
                 return "01/01/0001";
             }
 
-            return datestring;
+           return datestring;
         }
-
+        public static string GenerateTrailingWhiteSpace(string word, int maxLength)
+        {
+            string whitespace = "";
+            if (word.Length <= maxLength)
+            {
+                for (int i = maxLength; i > word.Length; i--)
+                {
+                    whitespace += " ";
+                }
+            }
+            return whitespace;
+        }
 
     }
 }

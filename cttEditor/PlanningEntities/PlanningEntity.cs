@@ -92,7 +92,7 @@ namespace cttEditor.PlanningEntities
         }
 
 
-      protected string[] GetStringData(string line)
+        protected string[] GetStringData(string line)
         {
             var simplifiedLine = SimplifyWhiteSpaces(line);
             return simplifiedLine.Split(new[] {" ", "\t"}, StringSplitOptions.None);

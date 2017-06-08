@@ -103,6 +103,8 @@ namespace cttEditor.PlanningEntities
                     break;
             }
 
+            TeacherGroupCount = EntityDataBase.TeacherGroups.Count(tg => tg.TeacherList.Count > 0);
+
 
             List<String> lines = new List<string>
             {

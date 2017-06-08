@@ -12,7 +12,7 @@ namespace cttEditor.PlanningEntities
 
 
         public string CourseCode { get; set; }
-        public string TeacherCode { get; set; }
+        public TeacherGroup TeacherGroup { get; set; }
         public int LectureSize { get; set; }
         public int MinimumWorkingDays { get; set; }
         public int StudentSize { get; set; }
@@ -21,20 +21,22 @@ namespace cttEditor.PlanningEntities
         public int MaximumWorkingDays { get; set; }
         public bool IsPcNeeded { get; set; }
         public int HoursPerDay { get; set; }
+        public List<Course> Dependencies { get; set; }
 
         public Course()
         {
             CourseCode = null;
-            TeacherCode = null;
+            TeacherGroup = null;
             LectureSize = 0;
             MinimumWorkingDays = 0;
             StudentSize = 0;
+            Dependencies = new List<Course>();
         }
 
-        public Course(string courseCode, string teacherCode, int lectureSize, int minimumWorkingDays, int studentSize)
+        public Course(string courseCode, string teacherGroup, int lectureSize, int minimumWorkingDays, int studentSize)
         {
             CourseCode = courseCode;
-            TeacherCode = teacherCode;
+            TeacherGroup = new TeacherGroup(teacherGroup);
             LectureSize = lectureSize;
             MinimumWorkingDays = minimumWorkingDays;
             StudentSize = studentSize;
@@ -52,8 +54,12 @@ namespace cttEditor.PlanningEntities
         }
 
         //get from database - DataGridView
-        public static Course FromDatabase(DataGridView datagridView, int i)
+        public static Course FromDatabase(DataGridView datagridView, int i= -1)
         {
+            if (i == -1)
+                if (datagridView.CurrentRow != null) i = datagridView.CurrentRow.Index;
+            if (i == -1) return null;
+
             //new curriculum with code
             string courseCode = datagridView[0, i].CellValue();
             Course course = FromDatabase(courseCode);
@@ -71,7 +77,7 @@ namespace cttEditor.PlanningEntities
             return null;
         }
 
-        //database - chech duplicates moved to super
+        //database - check duplicates moved to super
 //        public static void CheckDuplicatesInGrid(DataGridView dataGridView, int rowIndex, string revertName)
 //        {
 //            if (rowIndex < 0) return;
@@ -100,8 +106,10 @@ namespace cttEditor.PlanningEntities
             var i = 0;
             CourseCode = words[i++];
             HoursPerDay = CourseCode.EndsWith("_WK") ? 3 : 2;
-            TeacherCode = words[i++];
-            TeacherDatabase.TeacherCodes.Add(TeacherCode);
+
+            TeacherGroup = new TeacherGroup(words[i++]);
+            if (EntityDataBase.TeacherGroups.IndexOf(TeacherGroup) == -1)
+                EntityDataBase.TeacherGroups.Add(TeacherGroup);
             LectureSize = int.Parse(words[i++]);
             MinimumWorkingDays = int.Parse(words[i++]);
             StudentSize = int.Parse(words[i++]);
@@ -126,7 +134,9 @@ namespace cttEditor.PlanningEntities
             var i = 0;
             CourseCode = dataGridView[i++, rowIndex].CellValue();
             HoursPerDay = CourseCode.EndsWith("_WK") ? 3 : 2;
-            TeacherCode = dataGridView[i++, rowIndex].CellValue();
+            TeacherGroup = new TeacherGroup(dataGridView[i++, rowIndex].CellValue());
+            if (EntityDataBase.TeacherGroups.IndexOf(TeacherGroup) == -1)
+                EntityDataBase.TeacherGroups.Add(TeacherGroup);
             LectureSize = int.Parse(dataGridView[i++, rowIndex].CellValue());
             MinimumWorkingDays = int.Parse(dataGridView[i++, rowIndex].CellValue());
             StudentSize = int.Parse(dataGridView[i++, rowIndex].CellValue());
@@ -176,7 +186,7 @@ namespace cttEditor.PlanningEntities
         public override bool IsValid()
         {
             if (CourseCode != null &&
-                TeacherCode != null &&
+                TeacherGroup != null &&
                 LectureSize != 0 &&
                 MinimumWorkingDays != 0 &&
                 StudentSize != 0)
@@ -189,22 +199,27 @@ namespace cttEditor.PlanningEntities
         {
             var maximumWorkingDaysString = MaximumWorkingDays == int.MaxValue ? "/" : MaximumWorkingDays.ToString();
             var MinimumWorkingDaysString = MinimumWorkingDays < 1 ? "/" : MinimumWorkingDays.ToString();
-            var minimumDateString = MinimumDate.Equals(DateTime.MinValue) ? "/" : MinimumDate.ToString("dd/MM/yyy");
-            var deadlineDateString = DeadlineDate.Equals(DateTime.MaxValue) ? "/" : DeadlineDate.ToString("dd/MM/yyy");
+            var minimumDateString = MinimumDate.Equals(DateTime.MinValue) ? "/         " : MinimumDate.ToString("dd/MM/yyy");
+            var deadlineDateString = DeadlineDate.Equals(DateTime.MaxValue) ? "/         " : DeadlineDate.ToString("dd/MM/yyy");
+
+            string CourseCodeWhitespace = EditorUtilities.GenerateTrailingWhiteSpace(CourseCode, 16);
+            string TeacherCodeWhitespace = EditorUtilities.GenerateTrailingWhiteSpace(TeacherGroup.ToString(), 30);
+
+
 
 
 
             string line;
             line =
-                CourseCode + "\t" + 
-                TeacherCode + "\t" + "\t" + "\t" + "\t" +
-                LectureSize + "\t" + "\t" +
+                CourseCode + CourseCodeWhitespace +
+                TeacherGroup + TeacherCodeWhitespace + "\t" +
+                LectureSize + " \t" + "\t" +
                 MinimumWorkingDaysString + "\t" + "\t" +
-                StudentSize + "\t" + "\t" +
-                minimumDateString + "\t" + "\t" +
-                deadlineDateString + "\t" + "\t" +
-                maximumWorkingDaysString + "\t" + "\t" +
-                IsPcNeeded + "\t" + "\t" +
+                StudentSize + "\t" + "\t" + "\t" +
+                minimumDateString + "\t" +
+                deadlineDateString + "\t" + 
+                maximumWorkingDaysString + "\t" + "\t" + "\t" +
+                IsPcNeeded + "\t" + "\t" + "\t" +
                 HoursPerDay;
 
             return line;
@@ -223,7 +238,32 @@ namespace cttEditor.PlanningEntities
             var maxDays = MaximumWorkingDays == int.MaxValue ? "/" : MaximumWorkingDays.ToString();
 
             //add values to grid
-            destinationGrid.Rows.Add(CourseCode, TeacherCode, LectureSize, MinimumWorkingDays, StudentSize, minimumDateString, deadlineString, maxDays, IsPcNeeded, HoursPerDay);
+            destinationGrid.Rows.Add(CourseCode, TeacherGroup, LectureSize, MinimumWorkingDays, StudentSize, minimumDateString, deadlineString, maxDays, IsPcNeeded, HoursPerDay);
+        }
+
+        public void AddToDependencies(DataGridView destinationGrid)
+        {
+            //add values to grid
+            destinationGrid.Rows.Add(CourseCode);
+
+           
+        }
+
+        public void UpdateDependencieListboxes(ListBox dependenciesListbox, ListBox InactiveDependenciesListBox)
+        {
+            foreach (var dependency in Dependencies)
+            {
+                dependenciesListbox.Items.Add(dependency.CourseCode);
+            }
+            List<Course> selfList = new List<Course>();
+            selfList.Add(this);
+
+            var inactiveDependencies = EntityDataBase.Courses.Except(Dependencies).ToArray();
+            inactiveDependencies = inactiveDependencies.Except(selfList).ToArray();
+            foreach (var inactive in inactiveDependencies)
+            {
+                InactiveDependenciesListBox.Items.Add(inactive.CourseCode);
+            }
         }
 
 

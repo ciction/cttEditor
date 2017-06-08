@@ -50,10 +50,15 @@ namespace cttEditor
             this.saveButton = new System.Windows.Forms.Button();
             this.Tabs = new System.Windows.Forms.TabControl();
             this.tabTeachers = new System.Windows.Forms.TabPage();
+            this.OtherTeachers_listBox = new System.Windows.Forms.ListBox();
+            this.RemoveTeacherGroupButton = new System.Windows.Forms.Button();
+            this.label4 = new System.Windows.Forms.Label();
+            this.addTeacherGroupButton = new System.Windows.Forms.Button();
+            this.label5 = new System.Windows.Forms.Label();
+            this.TeachersInGroup_listBox = new System.Windows.Forms.ListBox();
             this.TeacherGroupslabel = new System.Windows.Forms.Label();
-            this.dataGridView2 = new System.Windows.Forms.DataGridView();
+            this.TeacherGroups_dataGridView = new System.Windows.Forms.DataGridView();
             this.TeacherGroup_TeacherGroupCode = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.TeacherGroup_TeacherCode = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.dataGridViewTeachers = new System.Windows.Forms.DataGridView();
             this.TeacherListTeacherCode = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Teacherlabel = new System.Windows.Forms.Label();
@@ -77,9 +82,18 @@ namespace cttEditor
             this.pasteExcelCourse = new System.Windows.Forms.Button();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.ConstraintsDataGridView = new System.Windows.Forms.DataGridView();
+            this.dataGridViewTextBoxColumn8 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.dataGridViewTextBoxColumn9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Timeslot = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.UnavailableCoursesLabel = new System.Windows.Forms.Label();
             this.UnavailabilityCountLabel = new System.Windows.Forms.Label();
             this.CurriculumTab = new System.Windows.Forms.TabPage();
+            this.UNAVAILABILITY_CURRICULUM_count_label = new System.Windows.Forms.Label();
+            this.UNAVAILABILITY_CURRICULUM_label = new System.Windows.Forms.Label();
+            this.CurriculumConstraintsDataGridView = new System.Windows.Forms.DataGridView();
+            this.CurriculumCode = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Day = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.U_CurriculumTimeslot = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.Curricula = new System.Windows.Forms.GroupBox();
             this.InactiveCoursesBox = new System.Windows.Forms.ListBox();
             this.RemoveCourseButton = new System.Windows.Forms.Button();
@@ -100,17 +114,33 @@ namespace cttEditor
             this.dataGridViewTextBoxColumn2 = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.pcCount = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.dataGridView1 = new System.Windows.Forms.DataGridView();
-            this.dataGridViewTextBoxColumn8 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.dataGridViewTextBoxColumn9 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Timeslot = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CourseDependencies_groupBox = new System.Windows.Forms.GroupBox();
+            this.CourseDependenciesInactive_listBox = new System.Windows.Forms.ListBox();
+            this.RemoveCourseDependencyButton = new System.Windows.Forms.Button();
+            this.label2 = new System.Windows.Forms.Label();
+            this.AddCourseDependencyButton = new System.Windows.Forms.Button();
+            this.label3 = new System.Windows.Forms.Label();
+            this.CourseDependencies_listBox = new System.Windows.Forms.ListBox();
+            this.CourseDependencies_dataGridView = new System.Windows.Forms.DataGridView();
+            this.dataGridViewTextBoxColumn5 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.CourseDependencies_label = new System.Windows.Forms.Label();
+            this.CourseDependencies_count_label = new System.Windows.Forms.Label();
+            this.Unavailable_Days_All_count_label = new System.Windows.Forms.Label();
+            this.Unavailable_hours_all__count_label = new System.Windows.Forms.Label();
+            this.Unavailable_Days_All_label = new System.Windows.Forms.Label();
+            this.Unavailable_hours_all_label = new System.Windows.Forms.Label();
+            this.Unavailable_Days_All_label_dataGridView = new System.Windows.Forms.DataGridView();
+            this.dataGridViewTextBoxColumn4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.UNAVAILABLE_HOURS_ALL_dataGridView = new System.Windows.Forms.DataGridView();
+            this.Constraint_Hours_All_day = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Constraint_Hours_All_Period = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.panel1.SuspendLayout();
             this.tableLayoutPanel4.SuspendLayout();
             this.groupBoxGeneral.SuspendLayout();
             this.flowLayoutPanel1.SuspendLayout();
             this.Tabs.SuspendLayout();
             this.tabTeachers.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.TeacherGroups_dataGridView)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewTeachers)).BeginInit();
             this.CoursesTab.SuspendLayout();
             this.tableLayoutPanel3.SuspendLayout();
@@ -120,12 +150,16 @@ namespace cttEditor
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ConstraintsDataGridView)).BeginInit();
             this.CurriculumTab.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.CurriculumConstraintsDataGridView)).BeginInit();
             this.Curricula.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CurriculaDataGridView)).BeginInit();
             this.RoomsTab.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RoomsdataGridView)).BeginInit();
             this.tabPage1.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.CourseDependencies_groupBox.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.CourseDependencies_dataGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Unavailable_Days_All_label_dataGridView)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.UNAVAILABLE_HOURS_ALL_dataGridView)).BeginInit();
             this.SuspendLayout();
             // 
             // panel1
@@ -315,8 +349,14 @@ namespace cttEditor
             // 
             // tabTeachers
             // 
+            this.tabTeachers.Controls.Add(this.OtherTeachers_listBox);
+            this.tabTeachers.Controls.Add(this.RemoveTeacherGroupButton);
+            this.tabTeachers.Controls.Add(this.label4);
+            this.tabTeachers.Controls.Add(this.addTeacherGroupButton);
+            this.tabTeachers.Controls.Add(this.label5);
+            this.tabTeachers.Controls.Add(this.TeachersInGroup_listBox);
             this.tabTeachers.Controls.Add(this.TeacherGroupslabel);
-            this.tabTeachers.Controls.Add(this.dataGridView2);
+            this.tabTeachers.Controls.Add(this.TeacherGroups_dataGridView);
             this.tabTeachers.Controls.Add(this.dataGridViewTeachers);
             this.tabTeachers.Controls.Add(this.Teacherlabel);
             this.tabTeachers.Location = new System.Drawing.Point(4, 22);
@@ -325,6 +365,60 @@ namespace cttEditor
             this.tabTeachers.TabIndex = 3;
             this.tabTeachers.Text = "Teachers";
             this.tabTeachers.UseVisualStyleBackColor = true;
+            // 
+            // OtherTeachers_listBox
+            // 
+            this.OtherTeachers_listBox.FormattingEnabled = true;
+            this.OtherTeachers_listBox.Location = new System.Drawing.Point(656, 257);
+            this.OtherTeachers_listBox.Name = "OtherTeachers_listBox";
+            this.OtherTeachers_listBox.Size = new System.Drawing.Size(185, 134);
+            this.OtherTeachers_listBox.TabIndex = 17;
+            // 
+            // RemoveTeacherGroupButton
+            // 
+            this.RemoveTeacherGroupButton.Location = new System.Drawing.Point(697, 214);
+            this.RemoveTeacherGroupButton.Name = "RemoveTeacherGroupButton";
+            this.RemoveTeacherGroupButton.Size = new System.Drawing.Size(90, 23);
+            this.RemoveTeacherGroupButton.TabIndex = 15;
+            this.RemoveTeacherGroupButton.Text = "Remove";
+            this.RemoveTeacherGroupButton.UseVisualStyleBackColor = true;
+            this.RemoveTeacherGroupButton.Click += new System.EventHandler(this.RemoveTeacherGroupButton_Click);
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(653, 22);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(95, 13);
+            this.label4.TabIndex = 12;
+            this.label4.Text = "Teachers in Group";
+            // 
+            // addTeacherGroupButton
+            // 
+            this.addTeacherGroupButton.Location = new System.Drawing.Point(697, 185);
+            this.addTeacherGroupButton.Name = "addTeacherGroupButton";
+            this.addTeacherGroupButton.Size = new System.Drawing.Size(90, 23);
+            this.addTeacherGroupButton.TabIndex = 16;
+            this.addTeacherGroupButton.Text = "Add";
+            this.addTeacherGroupButton.UseVisualStyleBackColor = true;
+            this.addTeacherGroupButton.Click += new System.EventHandler(this.addTeacherGroupButton_Click);
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(653, 240);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(81, 13);
+            this.label5.TabIndex = 13;
+            this.label5.Text = "Other Teachers";
+            // 
+            // TeachersInGroup_listBox
+            // 
+            this.TeachersInGroup_listBox.FormattingEnabled = true;
+            this.TeachersInGroup_listBox.Location = new System.Drawing.Point(656, 40);
+            this.TeachersInGroup_listBox.Name = "TeachersInGroup_listBox";
+            this.TeachersInGroup_listBox.Size = new System.Drawing.Size(185, 134);
+            this.TeachersInGroup_listBox.TabIndex = 14;
             // 
             // TeacherGroupslabel
             // 
@@ -336,28 +430,22 @@ namespace cttEditor
             this.TeacherGroupslabel.TabIndex = 6;
             this.TeacherGroupslabel.Text = "Teacher Groups:";
             // 
-            // dataGridView2
+            // TeacherGroups_dataGridView
             // 
-            this.dataGridView2.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView2.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.TeacherGroup_TeacherGroupCode,
-            this.TeacherGroup_TeacherCode});
-            this.dataGridView2.Location = new System.Drawing.Point(323, 23);
-            this.dataGridView2.Name = "dataGridView2";
-            this.dataGridView2.Size = new System.Drawing.Size(327, 368);
-            this.dataGridView2.TabIndex = 0;
+            this.TeacherGroups_dataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.TeacherGroups_dataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.TeacherGroup_TeacherGroupCode});
+            this.TeacherGroups_dataGridView.Location = new System.Drawing.Point(323, 23);
+            this.TeacherGroups_dataGridView.Name = "TeacherGroups_dataGridView";
+            this.TeacherGroups_dataGridView.Size = new System.Drawing.Size(327, 368);
+            this.TeacherGroups_dataGridView.TabIndex = 0;
+            this.TeacherGroups_dataGridView.SelectionChanged += new System.EventHandler(this.TeacherGroups_dataGridView_SelectionChanged);
             // 
             // TeacherGroup_TeacherGroupCode
             // 
             this.TeacherGroup_TeacherGroupCode.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
             this.TeacherGroup_TeacherGroupCode.HeaderText = "GroupCode";
             this.TeacherGroup_TeacherGroupCode.Name = "TeacherGroup_TeacherGroupCode";
-            // 
-            // TeacherGroup_TeacherCode
-            // 
-            this.TeacherGroup_TeacherCode.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.TeacherGroup_TeacherCode.HeaderText = "TeacherCode";
-            this.TeacherGroup_TeacherCode.Name = "TeacherGroup_TeacherCode";
             // 
             // dataGridViewTeachers
             // 
@@ -537,7 +625,7 @@ namespace cttEditor
             this.maxDays.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
             this.maxDays.HeaderText = "Max Days";
             this.maxDays.Name = "maxDays";
-            this.maxDays.Width = 79;
+            this.maxDays.Width = 73;
             // 
             // needPc
             // 
@@ -549,7 +637,7 @@ namespace cttEditor
             this.HoursPerDay.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
             this.HoursPerDay.HeaderText = "Hours Per Day";
             this.HoursPerDay.Name = "HoursPerDay";
-            this.HoursPerDay.Width = 101;
+            this.HoursPerDay.Width = 76;
             // 
             // pasteExcelCourse
             // 
@@ -588,10 +676,28 @@ namespace cttEditor
             this.ConstraintsDataGridView.Name = "ConstraintsDataGridView";
             this.ConstraintsDataGridView.Size = new System.Drawing.Size(353, 145);
             this.ConstraintsDataGridView.TabIndex = 5;
-            this.ConstraintsDataGridView.CellValueChanged += new DataGridViewCellEventHandler(ConstraintsDataGridView_CellValueChanged);
-            this.ConstraintsDataGridView.SelectionChanged += new EventHandler(ConstraintsDataGridView_SelectionChanged);
+            this.ConstraintsDataGridView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.ConstraintsDataGridView_CellValueChanged);
+            this.ConstraintsDataGridView.SelectionChanged += new System.EventHandler(this.ConstraintsDataGridView_SelectionChanged);
             this.ConstraintsDataGridView.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.ConstraintsDataGridView_UserDeletingRow);
-
+            // 
+            // dataGridViewTextBoxColumn8
+            // 
+            this.dataGridViewTextBoxColumn8.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.dataGridViewTextBoxColumn8.FillWeight = 5F;
+            this.dataGridViewTextBoxColumn8.HeaderText = "Coursecode";
+            this.dataGridViewTextBoxColumn8.Name = "dataGridViewTextBoxColumn8";
+            // 
+            // dataGridViewTextBoxColumn9
+            // 
+            this.dataGridViewTextBoxColumn9.HeaderText = "Day";
+            this.dataGridViewTextBoxColumn9.Name = "dataGridViewTextBoxColumn9";
+            this.dataGridViewTextBoxColumn9.Width = 80;
+            // 
+            // Timeslot
+            // 
+            this.Timeslot.HeaderText = "Timeslot";
+            this.Timeslot.Name = "Timeslot";
+            this.Timeslot.Width = 60;
             // 
             // UnavailableCoursesLabel
             // 
@@ -614,6 +720,9 @@ namespace cttEditor
             // 
             // CurriculumTab
             // 
+            this.CurriculumTab.Controls.Add(this.UNAVAILABILITY_CURRICULUM_count_label);
+            this.CurriculumTab.Controls.Add(this.UNAVAILABILITY_CURRICULUM_label);
+            this.CurriculumTab.Controls.Add(this.CurriculumConstraintsDataGridView);
             this.CurriculumTab.Controls.Add(this.Curricula);
             this.CurriculumTab.Location = new System.Drawing.Point(4, 22);
             this.CurriculumTab.Name = "CurriculumTab";
@@ -622,6 +731,58 @@ namespace cttEditor
             this.CurriculumTab.TabIndex = 1;
             this.CurriculumTab.Text = "Curricula";
             this.CurriculumTab.UseVisualStyleBackColor = true;
+            // 
+            // UNAVAILABILITY_CURRICULUM_count_label
+            // 
+            this.UNAVAILABILITY_CURRICULUM_count_label.AutoSize = true;
+            this.UNAVAILABILITY_CURRICULUM_count_label.Location = new System.Drawing.Point(297, 223);
+            this.UNAVAILABILITY_CURRICULUM_count_label.Name = "UNAVAILABILITY_CURRICULUM_count_label";
+            this.UNAVAILABILITY_CURRICULUM_count_label.Size = new System.Drawing.Size(13, 13);
+            this.UNAVAILABILITY_CURRICULUM_count_label.TabIndex = 13;
+            this.UNAVAILABILITY_CURRICULUM_count_label.Text = "0";
+            // 
+            // UNAVAILABILITY_CURRICULUM_label
+            // 
+            this.UNAVAILABILITY_CURRICULUM_label.AutoSize = true;
+            this.UNAVAILABILITY_CURRICULUM_label.Location = new System.Drawing.Point(28, 223);
+            this.UNAVAILABILITY_CURRICULUM_label.Name = "UNAVAILABILITY_CURRICULUM_label";
+            this.UNAVAILABILITY_CURRICULUM_label.Size = new System.Drawing.Size(272, 13);
+            this.UNAVAILABILITY_CURRICULUM_label.TabIndex = 13;
+            this.UNAVAILABILITY_CURRICULUM_label.Text = "unavailable Curriculum periods (no timeslot = whole day):";
+            // 
+            // CurriculumConstraintsDataGridView
+            // 
+            this.CurriculumConstraintsDataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.CurriculumConstraintsDataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.CurriculumCode,
+            this.Day,
+            this.U_CurriculumTimeslot});
+            this.CurriculumConstraintsDataGridView.Location = new System.Drawing.Point(28, 239);
+            this.CurriculumConstraintsDataGridView.Name = "CurriculumConstraintsDataGridView";
+            this.CurriculumConstraintsDataGridView.Size = new System.Drawing.Size(371, 150);
+            this.CurriculumConstraintsDataGridView.TabIndex = 12;
+            this.CurriculumConstraintsDataGridView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.CurriculumConstraints_CellValueChanged);
+            this.CurriculumConstraintsDataGridView.SelectionChanged += new System.EventHandler(this.CurriculumConstraints_SelectionChanged);
+            this.CurriculumConstraintsDataGridView.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.CurriculumConstraints_UserDeletingRow);
+            // 
+            // CurriculumCode
+            // 
+            this.CurriculumCode.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.CurriculumCode.HeaderText = "CurriculumCode";
+            this.CurriculumCode.Name = "CurriculumCode";
+            // 
+            // Day
+            // 
+            this.Day.HeaderText = "Date";
+            this.Day.Name = "Day";
+            this.Day.Width = 90;
+            // 
+            // U_CurriculumTimeslot
+            // 
+            this.U_CurriculumTimeslot.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
+            this.U_CurriculumTimeslot.HeaderText = "Timeslot";
+            this.U_CurriculumTimeslot.Name = "U_CurriculumTimeslot";
+            this.U_CurriculumTimeslot.Width = 71;
             // 
             // Curricula
             // 
@@ -708,8 +869,8 @@ namespace cttEditor
             this.CurriculaDataGridView.TabIndex = 0;
             this.CurriculaDataGridView.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.CurriculaDataGridView_CellValidating);
             this.CurriculaDataGridView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.CurriculaDataGridView_CellValueChanged);
+            this.CurriculaDataGridView.SelectionChanged += new System.EventHandler(this.CurriculaDataGridView_SelectionChanged);
             this.CurriculaDataGridView.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.CurriculaDataGridView_UserDeletingRow);
-            this.CurriculaDataGridView.SelectionChanged += new EventHandler(CurriculaDataGridView_SelectionChanged);
             // 
             // dataGridViewTextBoxColumn3
             // 
@@ -785,9 +946,9 @@ namespace cttEditor
             this.RoomsdataGridView.Name = "RoomsdataGridView";
             this.RoomsdataGridView.Size = new System.Drawing.Size(371, 145);
             this.RoomsdataGridView.TabIndex = 5;
-            this.RoomsdataGridView.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.RoomsdataGridView_UserDeletingRow);
             this.RoomsdataGridView.CellValidating += new System.Windows.Forms.DataGridViewCellValidatingEventHandler(this.RoomsdataGridView_CellValidating);
             this.RoomsdataGridView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.RoomsdataGridView_CellValueChanged);
+            this.RoomsdataGridView.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.RoomsdataGridView_UserDeletingRow);
             // 
             // dataGridViewTextBoxColumn1
             // 
@@ -812,41 +973,210 @@ namespace cttEditor
             // 
             // tabPage1
             // 
-            this.tabPage1.Controls.Add(this.dataGridView1);
+            this.tabPage1.Controls.Add(this.CourseDependencies_groupBox);
+            this.tabPage1.Controls.Add(this.Unavailable_Days_All_count_label);
+            this.tabPage1.Controls.Add(this.Unavailable_hours_all__count_label);
+            this.tabPage1.Controls.Add(this.Unavailable_Days_All_label);
+            this.tabPage1.Controls.Add(this.Unavailable_hours_all_label);
+            this.tabPage1.Controls.Add(this.Unavailable_Days_All_label_dataGridView);
+            this.tabPage1.Controls.Add(this.UNAVAILABLE_HOURS_ALL_dataGridView);
             this.tabPage1.Location = new System.Drawing.Point(4, 22);
             this.tabPage1.Name = "tabPage1";
             this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
             this.tabPage1.Size = new System.Drawing.Size(1082, 439);
             this.tabPage1.TabIndex = 4;
-            this.tabPage1.Text = "test";
+            this.tabPage1.Text = "Other Constraints";
             this.tabPage1.UseVisualStyleBackColor = true;
             // 
-            // dataGridView1
+            // CourseDependencies_groupBox
             // 
-            this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.dataGridView1.Location = new System.Drawing.Point(154, 58);
-            this.dataGridView1.Name = "dataGridView1";
-            this.dataGridView1.Size = new System.Drawing.Size(240, 150);
-            this.dataGridView1.TabIndex = 0;
+            this.CourseDependencies_groupBox.Controls.Add(this.CourseDependenciesInactive_listBox);
+            this.CourseDependencies_groupBox.Controls.Add(this.RemoveCourseDependencyButton);
+            this.CourseDependencies_groupBox.Controls.Add(this.label2);
+            this.CourseDependencies_groupBox.Controls.Add(this.AddCourseDependencyButton);
+            this.CourseDependencies_groupBox.Controls.Add(this.label3);
+            this.CourseDependencies_groupBox.Controls.Add(this.CourseDependencies_listBox);
+            this.CourseDependencies_groupBox.Controls.Add(this.CourseDependencies_dataGridView);
+            this.CourseDependencies_groupBox.Controls.Add(this.CourseDependencies_label);
+            this.CourseDependencies_groupBox.Controls.Add(this.CourseDependencies_count_label);
+            this.CourseDependencies_groupBox.Location = new System.Drawing.Point(13, 26);
+            this.CourseDependencies_groupBox.Name = "CourseDependencies_groupBox";
+            this.CourseDependencies_groupBox.Size = new System.Drawing.Size(848, 177);
+            this.CourseDependencies_groupBox.TabIndex = 12;
+            this.CourseDependencies_groupBox.TabStop = false;
+            this.CourseDependencies_groupBox.Text = "Course Dependencies:";
             // 
-            // dataGridViewTextBoxColumn8
+            // CourseDependenciesInactive_listBox
             // 
-            this.dataGridViewTextBoxColumn8.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.dataGridViewTextBoxColumn8.FillWeight = 5F;
-            this.dataGridViewTextBoxColumn8.HeaderText = "Coursecode";
-            this.dataGridViewTextBoxColumn8.Name = "dataGridViewTextBoxColumn8";
+            this.CourseDependenciesInactive_listBox.FormattingEnabled = true;
+            this.CourseDependenciesInactive_listBox.Location = new System.Drawing.Point(650, 33);
+            this.CourseDependenciesInactive_listBox.Name = "CourseDependenciesInactive_listBox";
+            this.CourseDependenciesInactive_listBox.Size = new System.Drawing.Size(185, 134);
+            this.CourseDependenciesInactive_listBox.TabIndex = 11;
             // 
-            // dataGridViewTextBoxColumn9
+            // RemoveCourseDependencyButton
             // 
-            this.dataGridViewTextBoxColumn9.HeaderText = "Day";
-            this.dataGridViewTextBoxColumn9.Name = "dataGridViewTextBoxColumn9";
-            this.dataGridViewTextBoxColumn9.Width = 80;
+            this.RemoveCourseDependencyButton.Location = new System.Drawing.Point(554, 104);
+            this.RemoveCourseDependencyButton.Name = "RemoveCourseDependencyButton";
+            this.RemoveCourseDependencyButton.Size = new System.Drawing.Size(90, 23);
+            this.RemoveCourseDependencyButton.TabIndex = 10;
+            this.RemoveCourseDependencyButton.Text = "Remove";
+            this.RemoveCourseDependencyButton.UseVisualStyleBackColor = true;
+            this.RemoveCourseDependencyButton.Click += new System.EventHandler(this.RemoveCourseDependencyButton_Click);
             // 
-            // Timeslot
+            // label2
             // 
-            this.Timeslot.HeaderText = "Timeslot";
-            this.Timeslot.Name = "Timeslot";
-            this.Timeslot.Width = 60;
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(360, 15);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(79, 13);
+            this.label2.TabIndex = 1;
+            this.label2.Text = "Dependencies:";
+            // 
+            // AddCourseDependencyButton
+            // 
+            this.AddCourseDependencyButton.Location = new System.Drawing.Point(554, 75);
+            this.AddCourseDependencyButton.Name = "AddCourseDependencyButton";
+            this.AddCourseDependencyButton.Size = new System.Drawing.Size(90, 23);
+            this.AddCourseDependencyButton.TabIndex = 10;
+            this.AddCourseDependencyButton.Text = "Add";
+            this.AddCourseDependencyButton.UseVisualStyleBackColor = true;
+            this.AddCourseDependencyButton.Click += new System.EventHandler(this.AddCourseDependencyButton_Click);
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(647, 16);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(88, 13);
+            this.label3.TabIndex = 1;
+            this.label3.Text = "Inactive courses:";
+            // 
+            // CourseDependencies_listBox
+            // 
+            this.CourseDependencies_listBox.FormattingEnabled = true;
+            this.CourseDependencies_listBox.Location = new System.Drawing.Point(363, 33);
+            this.CourseDependencies_listBox.Name = "CourseDependencies_listBox";
+            this.CourseDependencies_listBox.Size = new System.Drawing.Size(185, 134);
+            this.CourseDependencies_listBox.TabIndex = 9;
+            // 
+            // CourseDependencies_dataGridView
+            // 
+            this.CourseDependencies_dataGridView.AllowUserToOrderColumns = true;
+            this.CourseDependencies_dataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.CourseDependencies_dataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dataGridViewTextBoxColumn5});
+            this.CourseDependencies_dataGridView.Location = new System.Drawing.Point(6, 33);
+            this.CourseDependencies_dataGridView.Name = "CourseDependencies_dataGridView";
+            this.CourseDependencies_dataGridView.Size = new System.Drawing.Size(329, 134);
+            this.CourseDependencies_dataGridView.TabIndex = 0;
+            this.CourseDependencies_dataGridView.SelectionChanged += new System.EventHandler(this.CourseDependencies_dataGridView_SelectionChanged);
+            // 
+            // dataGridViewTextBoxColumn5
+            // 
+            this.dataGridViewTextBoxColumn5.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.dataGridViewTextBoxColumn5.HeaderText = "CourseCode";
+            this.dataGridViewTextBoxColumn5.Name = "dataGridViewTextBoxColumn5";
+            // 
+            // CourseDependencies_label
+            // 
+            this.CourseDependencies_label.AutoSize = true;
+            this.CourseDependencies_label.Location = new System.Drawing.Point(6, 15);
+            this.CourseDependencies_label.Name = "CourseDependencies_label";
+            this.CourseDependencies_label.Size = new System.Drawing.Size(104, 13);
+            this.CourseDependencies_label.TabIndex = 1;
+            this.CourseDependencies_label.Text = "Dependent Courses:";
+            // 
+            // CourseDependencies_count_label
+            // 
+            this.CourseDependencies_count_label.AutoSize = true;
+            this.CourseDependencies_count_label.Location = new System.Drawing.Point(124, 17);
+            this.CourseDependencies_count_label.Name = "CourseDependencies_count_label";
+            this.CourseDependencies_count_label.Size = new System.Drawing.Size(13, 13);
+            this.CourseDependencies_count_label.TabIndex = 1;
+            this.CourseDependencies_count_label.Text = "0";
+            // 
+            // Unavailable_Days_All_count_label
+            // 
+            this.Unavailable_Days_All_count_label.AutoSize = true;
+            this.Unavailable_Days_All_count_label.Location = new System.Drawing.Point(425, 250);
+            this.Unavailable_Days_All_count_label.Name = "Unavailable_Days_All_count_label";
+            this.Unavailable_Days_All_count_label.Size = new System.Drawing.Size(13, 13);
+            this.Unavailable_Days_All_count_label.TabIndex = 1;
+            this.Unavailable_Days_All_count_label.Text = "0";
+            // 
+            // Unavailable_hours_all__count_label
+            // 
+            this.Unavailable_hours_all__count_label.AutoSize = true;
+            this.Unavailable_hours_all__count_label.Location = new System.Drawing.Point(133, 250);
+            this.Unavailable_hours_all__count_label.Name = "Unavailable_hours_all__count_label";
+            this.Unavailable_hours_all__count_label.Size = new System.Drawing.Size(13, 13);
+            this.Unavailable_hours_all__count_label.TabIndex = 1;
+            this.Unavailable_hours_all__count_label.Text = "0";
+            // 
+            // Unavailable_Days_All_label
+            // 
+            this.Unavailable_Days_All_label.AutoSize = true;
+            this.Unavailable_Days_All_label.Location = new System.Drawing.Point(308, 250);
+            this.Unavailable_Days_All_label.Name = "Unavailable_Days_All_label";
+            this.Unavailable_Days_All_label.Size = new System.Drawing.Size(107, 13);
+            this.Unavailable_Days_All_label.TabIndex = 1;
+            this.Unavailable_Days_All_label.Text = "Unavailable Days All:";
+            // 
+            // Unavailable_hours_all_label
+            // 
+            this.Unavailable_hours_all_label.AutoSize = true;
+            this.Unavailable_hours_all_label.Location = new System.Drawing.Point(16, 250);
+            this.Unavailable_hours_all_label.Name = "Unavailable_hours_all_label";
+            this.Unavailable_hours_all_label.Size = new System.Drawing.Size(111, 13);
+            this.Unavailable_hours_all_label.TabIndex = 1;
+            this.Unavailable_hours_all_label.Text = "Unavailable Hours All:";
+            // 
+            // Unavailable_Days_All_label_dataGridView
+            // 
+            this.Unavailable_Days_All_label_dataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.Unavailable_Days_All_label_dataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.dataGridViewTextBoxColumn4});
+            this.Unavailable_Days_All_label_dataGridView.Location = new System.Drawing.Point(311, 266);
+            this.Unavailable_Days_All_label_dataGridView.Name = "Unavailable_Days_All_label_dataGridView";
+            this.Unavailable_Days_All_label_dataGridView.Size = new System.Drawing.Size(240, 150);
+            this.Unavailable_Days_All_label_dataGridView.TabIndex = 0;
+            this.Unavailable_Days_All_label_dataGridView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.UNAVAILABLE_Days_ALL_CellValueChanged);
+            this.Unavailable_Days_All_label_dataGridView.SelectionChanged += new System.EventHandler(this.UNAVAILABLE_Days_ALL_SelectionChanged);
+            this.Unavailable_Days_All_label_dataGridView.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.UNAVAILABLE_Days_ALL_UserDeletingRow);
+            // 
+            // dataGridViewTextBoxColumn4
+            // 
+            this.dataGridViewTextBoxColumn4.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.dataGridViewTextBoxColumn4.HeaderText = "Day";
+            this.dataGridViewTextBoxColumn4.Name = "dataGridViewTextBoxColumn4";
+            // 
+            // UNAVAILABLE_HOURS_ALL_dataGridView
+            // 
+            this.UNAVAILABLE_HOURS_ALL_dataGridView.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.UNAVAILABLE_HOURS_ALL_dataGridView.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Constraint_Hours_All_day,
+            this.Constraint_Hours_All_Period});
+            this.UNAVAILABLE_HOURS_ALL_dataGridView.Location = new System.Drawing.Point(19, 266);
+            this.UNAVAILABLE_HOURS_ALL_dataGridView.Name = "UNAVAILABLE_HOURS_ALL_dataGridView";
+            this.UNAVAILABLE_HOURS_ALL_dataGridView.Size = new System.Drawing.Size(240, 150);
+            this.UNAVAILABLE_HOURS_ALL_dataGridView.TabIndex = 0;
+            this.UNAVAILABLE_HOURS_ALL_dataGridView.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.UNAVAILABLE_HOURS_ALLCellValueChanged);
+            this.UNAVAILABLE_HOURS_ALL_dataGridView.SelectionChanged += new System.EventHandler(this.UNAVAILABLE_HOURS_ALL_SelectionChanged);
+            this.UNAVAILABLE_HOURS_ALL_dataGridView.UserDeletingRow += new System.Windows.Forms.DataGridViewRowCancelEventHandler(this.UNAVAILABLE_HOURS_ALLUserDeletingRow);
+            // 
+            // Constraint_Hours_All_day
+            // 
+            this.Constraint_Hours_All_day.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.Constraint_Hours_All_day.HeaderText = "Day";
+            this.Constraint_Hours_All_day.Name = "Constraint_Hours_All_day";
+            // 
+            // Constraint_Hours_All_Period
+            // 
+            this.Constraint_Hours_All_Period.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.ColumnHeader;
+            this.Constraint_Hours_All_Period.HeaderText = "Period";
+            this.Constraint_Hours_All_Period.Name = "Constraint_Hours_All_Period";
+            this.Constraint_Hours_All_Period.Width = 62;
             // 
             // Form1
             // 
@@ -869,7 +1199,7 @@ namespace cttEditor
             this.Tabs.ResumeLayout(false);
             this.tabTeachers.ResumeLayout(false);
             this.tabTeachers.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.TeacherGroups_dataGridView)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewTeachers)).EndInit();
             this.CoursesTab.ResumeLayout(false);
             this.tableLayoutPanel3.ResumeLayout(false);
@@ -882,6 +1212,8 @@ namespace cttEditor
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ConstraintsDataGridView)).EndInit();
             this.CurriculumTab.ResumeLayout(false);
+            this.CurriculumTab.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.CurriculumConstraintsDataGridView)).EndInit();
             this.Curricula.ResumeLayout(false);
             this.Curricula.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.CurriculaDataGridView)).EndInit();
@@ -889,7 +1221,12 @@ namespace cttEditor
             this.RoomsTab.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.RoomsdataGridView)).EndInit();
             this.tabPage1.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.tabPage1.PerformLayout();
+            this.CourseDependencies_groupBox.ResumeLayout(false);
+            this.CourseDependencies_groupBox.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.CourseDependencies_dataGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.Unavailable_Days_All_label_dataGridView)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.UNAVAILABLE_HOURS_ALL_dataGridView)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -915,9 +1252,7 @@ namespace cttEditor
         private TabControl Tabs;
         private TabPage tabTeachers;
         private Label TeacherGroupslabel;
-        private DataGridView dataGridView2;
-        private DataGridViewTextBoxColumn TeacherGroup_TeacherGroupCode;
-        private DataGridViewTextBoxColumn TeacherGroup_TeacherCode;
+        private DataGridView TeacherGroups_dataGridView;
         private DataGridView dataGridViewTeachers;
         private DataGridViewTextBoxColumn TeacherListTeacherCode;
         private Label Teacherlabel;
@@ -948,7 +1283,6 @@ namespace cttEditor
         private Label RoomsCountLabel;
         private DataGridView RoomsdataGridView;
         private TabPage tabPage1;
-        private DataGridView dataGridView1;
         private DataGridViewTextBoxColumn CourseCode;
         private DataGridViewTextBoxColumn TeacherCode;
         private DataGridViewTextBoxColumn LectureSize;
@@ -968,6 +1302,39 @@ namespace cttEditor
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn8;
         private DataGridViewTextBoxColumn dataGridViewTextBoxColumn9;
         private DataGridViewTextBoxColumn Timeslot;
+        private Label UNAVAILABILITY_CURRICULUM_label;
+        private Label UNAVAILABILITY_CURRICULUM_count_label;
+        private DataGridView CurriculumConstraintsDataGridView;
+        private DataGridViewTextBoxColumn CurriculumCode;
+        private DataGridViewTextBoxColumn Day;
+        private DataGridViewTextBoxColumn U_CurriculumTimeslot;
+        private Label Unavailable_hours_all__count_label;
+        private Label Unavailable_hours_all_label;
+        private DataGridView UNAVAILABLE_HOURS_ALL_dataGridView;
+        private DataGridViewTextBoxColumn Constraint_Hours_All_day;
+        private DataGridViewTextBoxColumn Constraint_Hours_All_Period;
+        private GroupBox CourseDependencies_groupBox;
+        private ListBox CourseDependenciesInactive_listBox;
+        private Button RemoveCourseDependencyButton;
+        private Label label2;
+        private Button AddCourseDependencyButton;
+        private Label label3;
+        private ListBox CourseDependencies_listBox;
+        private DataGridView CourseDependencies_dataGridView;
+        private Label CourseDependencies_label;
+        private Label CourseDependencies_count_label;
+        private Label Unavailable_Days_All_count_label;
+        private Label Unavailable_Days_All_label;
+        private DataGridView Unavailable_Days_All_label_dataGridView;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn4;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn5;
+        private ListBox OtherTeachers_listBox;
+        private Button RemoveTeacherGroupButton;
+        private Label label4;
+        private Button addTeacherGroupButton;
+        private Label label5;
+        private ListBox TeachersInGroup_listBox;
+        private DataGridViewTextBoxColumn TeacherGroup_TeacherGroupCode;
     }
 }
 

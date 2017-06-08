@@ -64,7 +64,10 @@
     </Compile>
     <Compile Include="PlanningEntities\HeaderData.cs" />
     <Compile Include="PlanningEntities\PlanningEntity.cs" />
-    <Compile Include="PlanningEntities\TeacherDatabase.cs" />
+    <Compile Include="PlanningEntities\TeacherGroup.cs" />
+    <Compile Include="PlanningEntities\Unavailability_Days_All.cs" />
+    <Compile Include="PlanningEntities\Unavailability_Hours_All.cs" />
+    <Compile Include="PlanningEntities\Unavailability_Curriculum.cs" />
     <Compile Include="PlanningEntities\Unavailability_Course.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
